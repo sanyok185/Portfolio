@@ -18,7 +18,16 @@
     <link rel="alternate" hreflang="uk" href="https://panchuk.dev/" />
     <link rel="alternate" hreflang="en" href="https://panchuk.dev/en/" />
     <script>
-      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("fx");
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.documentElement.classList.add("fx");
+        // Прелоадер — один раз за сесію; страховка, якщо скрипт не спрацює
+        try {
+          if (!sessionStorage.getItem("pl")) {
+            document.documentElement.classList.add("fx-pl");
+            setTimeout(function () { document.documentElement.classList.remove("fx-pl"); }, 7000);
+          }
+        } catch (e) {}
+      }
     </script>
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -31,6 +40,17 @@
     <link rel="stylesheet" href="css/fx.css" />
   </head>
   <body>
+    <div class="pl" aria-hidden="true">
+      <div class="pl-curtain pl-c2"></div>
+      <div class="pl-curtain pl-c1">
+        <div class="pl-logo"><span>P</span><span>A</span><span>N</span><span>C</span><span>H</span><span>U</span><span>K</span><span class="pl-dev">.</span><span class="pl-dev">d</span><span class="pl-dev">e</span><span class="pl-dev">v</span></div>
+        <div class="pl-bottom">
+          <span class="pl-label">Завантаження</span>
+          <span class="pl-num"><span data-pl-num>0</span><small>%</small></span>
+        </div>
+        <div class="pl-line"><span data-pl-line></span></div>
+      </div>
+    </div>
     <div class="pf light" id="pf">
       <!-- Тема ставиться до першого рендеру, щоб не було спалаху -->
       <script>

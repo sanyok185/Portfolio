@@ -8,6 +8,40 @@
   const isEn = html.lang === 'en';
   const lerp = (a, b, t) => a + (b - a) * t;
 
+  /* ---------- Прелоадер ---------- */
+  const pl = document.querySelector('.pl');
+  if (pl && html.classList.contains('fx-pl')) {
+    const num = pl.querySelector('[data-pl-num]');
+    const line = pl.querySelector('[data-pl-line]');
+    const start = performance.now();
+    const MIN = 1600; // мінімальна тривалість, щоб анімація встигла
+    let loaded = document.readyState === 'complete';
+    window.addEventListener('load', () => (loaded = true));
+    let shown = 0;
+    const tick = (now) => {
+      const t = Math.min((now - start) / MIN, 1);
+      // Поки сторінка вантажиться, лічильник повзе до 90, потім добігає до 100
+      const target = loaded ? 100 * t : Math.min(90, 100 * t);
+      shown += (target - shown) * 0.12;
+      if (loaded && t >= 1 && shown > 99.4) shown = 100;
+      num.textContent = String(Math.round(shown));
+      line.style.transform = `scaleX(${shown / 100})`;
+      if (shown < 100) return requestAnimationFrame(tick);
+      setTimeout(() => {
+        pl.classList.add('pl-out');
+        // Інтро hero стартує, поки завіса ще їде
+        setTimeout(() => html.classList.remove('fx-pl'), 1000);
+        setTimeout(() => pl.remove(), 1700);
+      }, 200);
+      try {
+        sessionStorage.setItem('pl', '1');
+      } catch (e) {}
+    };
+    requestAnimationFrame(tick);
+  } else {
+    pl?.remove();
+  }
+
   /* ---------- Розбиття тексту ---------- */
   // Літери заголовка hero (слова не розриваються між рядками)
   const h1 = document.querySelector('.hero .h1');
