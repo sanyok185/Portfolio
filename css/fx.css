@@ -166,8 +166,3 @@
 /* Поки йде прелоадер, інтро hero стоїть на паузі */
 .fx-pl .fx-ch, .fx-pl .hero .lead, .fx-pl .hero-btns { animation-play-state: paused; }
 
-/* «Болі»: іконка проблеми хитається, галочка рішення пружно збільшується */
-.fx .pain-ic { transition: transform .5s cubic-bezier(.34, 1.56, .64, 1); }
-.fx .pain:hover .pain-ic { transform: rotate(-8deg) scale(1.08); }
-.fx .pain-lbl svg { transition: transform .5s cubic-bezier(.34, 1.56, .64, 1); }
-.fx .pain:hover .pain-lbl svg { transform: scale(1.2); }

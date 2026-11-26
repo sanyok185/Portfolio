@@ -45,9 +45,9 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="../css/style.css" />
-    <link rel="stylesheet" href="../css/fx.css" />
-    <link rel="stylesheet" href="../css/fx-pro.css" />
+    <link rel="stylesheet" href="../css/style.css?v=202611261219" />
+    <link rel="stylesheet" href="../css/fx.css?v=202611261219" />
+    <link rel="stylesheet" href="../css/fx-pro.css?v=202611261219" />
   </head>
   <body>
     <div class="pl" aria-hidden="true">
@@ -155,7 +155,6 @@
       </header>
       <nav class="mnav" id="mnav" aria-label="Mobile menu" inert>
         <div class="mnav-in">
-          <div class="mnav-label">Menu</div>
           <ul class="mnav-list">
             <li style="--i: 0">
               <a class="mnav-link" href="#works"><span class="mnav-t">Work</span></a>
@@ -274,38 +273,44 @@
               </div>
               <p class="sub">And what I do about each of them.</p>
             </div>
-            <div class="pains">
-              <div class="pain">
-                <div class="pain-top">
-                  <span class="pain-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"></path><path d="M4 4l16 16"></path></svg></span>
-                  <h3 class="pain-t">You’re not online</h3>
-                  <p class="pain-p">People search for your service on Google and find someone else.</p>
+            <div class="ps">
+              <div class="ps-row">
+                <div class="ps-problem">
+                  <span class="ps-k">Problem</span>
+                  <h3 class="ps-t"><span>You’re not online</span></h3>
+                  <p>People search for your service on Google and find someone else.</p>
                 </div>
-                <div class="pain-fix">
-                  <span class="pain-lbl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>Solution</span>
-                  <p>A landing page in <b>7 days</b> with inquiries sent straight to your Telegram.</p>
-                </div>
-              </div>
-              <div class="pain">
-                <div class="pain-top">
-                  <span class="pain-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7l6 6 4-4 8 8"></path><path d="M21 12v5h-5"></path></svg></span>
-                  <h3 class="pain-t">A site, but no inquiries</h3>
-                  <p class="pain-p">Slow, awkward on phones, and it’s unclear what to do next.</p>
-                </div>
-                <div class="pain-fix">
-                  <span class="pain-lbl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>Solution</span>
-                  <p>A fast site where everything leads to one action: <b>sending an inquiry</b>.</p>
+                <div class="ps-arrow" aria-hidden="true"><span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></span></div>
+                <div class="ps-solution">
+                  <span class="ps-k">Solution</span>
+                  <h3 class="ps-t">A landing page in 7 days</h3>
+                  <p>With a form that sends inquiries straight to your Telegram.</p>
                 </div>
               </div>
-              <div class="pain">
-                <div class="pain-top">
-                  <span class="pain-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="4"></circle><path d="M2 21a7 7 0 0 1 14 0"></path><path d="m17 8 5 5M22 8l-5 5"></path></svg></span>
-                  <h3 class="pain-t">The developer disappeared</h3>
-                  <p class="pain-p">You need to change a price or a photo, and nobody replies for weeks.</p>
+              <div class="ps-row">
+                <div class="ps-problem">
+                  <span class="ps-k">Problem</span>
+                  <h3 class="ps-t"><span>A site, but no inquiries</span></h3>
+                  <p>Slow, awkward on phones, and it’s unclear what to do next.</p>
                 </div>
-                <div class="pain-fix">
-                  <span class="pain-lbl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>Solution</span>
-                  <p><b>Support after launch</b>: I make small edits within a few hours.</p>
+                <div class="ps-arrow" aria-hidden="true"><span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></span></div>
+                <div class="ps-solution">
+                  <span class="ps-k">Solution</span>
+                  <h3 class="ps-t">A site that sells</h3>
+                  <p>Fast, easy on phones, and everything leads to one action: sending an inquiry.</p>
+                </div>
+              </div>
+              <div class="ps-row">
+                <div class="ps-problem">
+                  <span class="ps-k">Problem</span>
+                  <h3 class="ps-t"><span>The developer disappeared</span></h3>
+                  <p>You need to change a price or a photo, and nobody replies for weeks.</p>
+                </div>
+                <div class="ps-arrow" aria-hidden="true"><span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></span></div>
+                <div class="ps-solution">
+                  <span class="ps-k">Solution</span>
+                  <h3 class="ps-t">Support after launch</h3>
+                  <p>I make small edits within a few hours. You always know who to message.</p>
                 </div>
               </div>
             </div>
@@ -974,9 +979,9 @@
         </svg>
       </a>
     </div>
-    <script src="../js/main.js" defer></script>
-    <script src="../js/fx.js" defer></script>
-    <script src="../js/vendor/lenis.min.js" defer></script>
-    <script src="../js/fx-pro.js" defer></script>
+    <script src="../js/main.js?v=202611261219" defer></script>
+    <script src="../js/fx.js?v=202611261219" defer></script>
+    <script src="../js/vendor/lenis.min.js?v=202611261219" defer></script>
+    <script src="../js/fx-pro.js?v=202611261219" defer></script>
   </body>
 </html>
