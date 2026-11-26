@@ -344,19 +344,14 @@ html:has(.pf.dark)::-webkit-scrollbar-thumb { border-color: #0b0c16; }
 /* Лінія під пунктом малюється зліва направо */
 .mnav-list li::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--line); transform: scaleX(0); transform-origin: 0 50%; transition: transform .7s cubic-bezier(.16, 1, .3, 1); }
 .mnav-link { display: flex; align-items: baseline; gap: 14px; padding: 12px 0; font: 600 clamp(30px, 8.6vw, 52px)/1.12 Unbounded, Inter, sans-serif; letter-spacing: -0.03em; color: var(--strong); transform: translateY(110%); transition: transform .55s cubic-bezier(.76, 0, .24, 1), color .3s; }
-.mnav-n { flex: 0 0 auto; min-width: 24px; font: 600 12px Inter, sans-serif; letter-spacing: .04em; color: var(--muted); transform: translateY(-1.4em); }
 .mnav-t { transition: transform .45s cubic-bezier(.16, 1, .3, 1); }
 .mnav-link::after { content: "→"; margin-left: auto; align-self: center; font: 500 22px Inter, sans-serif; color: var(--accent); opacity: 0; transform: translateX(-12px); transition: opacity .3s, transform .45s cubic-bezier(.16, 1, .3, 1); }
 .mnav-link:hover .mnav-t, .mnav-link:focus-visible .mnav-t { transform: translateX(8px); }
 .mnav-link:hover::after, .mnav-link:focus-visible::after, .mnav-link.is-active::after { opacity: 1; transform: none; }
 .mnav-link.is-active .mnav-t { background: linear-gradient(100deg, #146ef5, #8b5cf6 50%, #ec4899); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.mnav-link.is-active .mnav-n { color: var(--accent); }
 .mnav-foot { margin-top: auto; display: flex; flex-direction: column; gap: 22px; opacity: 0; transform: translateY(24px); transition: opacity .35s, transform .5s cubic-bezier(.16, 1, .3, 1); }
 .mnav-cta { width: 100%; }
 .mnav-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; padding-top: 22px; border-top: 1px solid var(--line); }
-.mnav-contacts { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.mnav-contacts .mnav-label { margin-bottom: 4px; }
-.mnav-contacts a { color: var(--strong); font-weight: 600; padding: 4px 0; overflow-wrap: anywhere; }
 
 /* Відкрите меню: пункти виїжджають по черзі */
 .menu-open .mnav-in > .mnav-label { opacity: 1; transition-delay: .25s; }
@@ -525,3 +520,9 @@ html.lead-open .cx { opacity: 0 !important; }
 .pf.light .theme-switch:hover .ts-sun, .pf.dark .theme-switch:hover .ts-moon { color: #fff; }
 .pf.light .theme-switch .ts-sun svg, .pf.dark .theme-switch .ts-moon svg { display: block; }
 @media (prefers-reduced-motion: reduce) { .ts-thumb { transition: none; } }
+
+/* Мобільне меню: перемикач мов унизу, у шапці на телефоні — тільки логотип і бургер */
+.mnav-row { align-items: center; }
+@media screen and (max-width: 640px) {
+  .hdr .lang { display: none; }
+}
