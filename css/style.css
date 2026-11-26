@@ -595,3 +595,10 @@ html.lead-open .cx { opacity: 0 !important; }
 @media screen and (min-width: 641px) and (max-width: 1100px) {
   .extras { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Підзаголовок секції на десктопі — притиснутий до правого краю, як і сітка карток */
+@media screen and (min-width: 992px) {
+  .head .sub { margin-left: auto; text-align: right; max-width: 28em; }
+  /* У «Процесі» заголовок довгий, і підзаголовок стоїть під ним — там лишаємо зліва */
+  #process .head .sub { margin-left: 0; text-align: left; }
+}
