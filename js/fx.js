@@ -608,7 +608,7 @@
       return setMode('text');
     }
     const link = t.closest('a, button, summary, label.check, .sb');
-    if (link && !link.classList.contains('sb') && !link.closest('.nav, .up')) {
+    if (link && !link.classList.contains('sb') && !link.closest('.nav, .up, summary')) {
       if (link !== target) {
         target = link;
         const r = link.getBoundingClientRect();
@@ -622,7 +622,7 @@
       return setMode('link');
     }
     target = null;
-    if (link && link.closest('.nav, .up')) return setMode('mini');
+    if (link && link.closest('.nav, .up, summary')) return setMode('mini');
     setMode('');
   };
 
