@@ -426,8 +426,6 @@ html.menu-open { overflow: hidden; }
   .hdr-cta { display: none; }
 }
 @media screen and (max-width: 640px) {
-  /* На телефоні перемикач теми живе в меню, щоб шапка влазила в один рядок */
-  .hdr [data-theme-toggle] { display: none; }
   .mnav-in { padding-top: 92px; }
 }
 @media screen and (max-width: 380px) {
