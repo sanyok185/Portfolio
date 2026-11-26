@@ -435,9 +435,15 @@ html.menu-open { overflow: hidden; }
   .hdr, .nav-pill { transition: none; }
 }
 
+.foot-ctrl { display: inline-flex; align-items: center; gap: 22px; }
+/* Коли видно футер, кругла кнопка Telegram ховається, щоб нічого не перекривати */
+.foot-visible .fab { opacity: 0; transform: scale(.6); pointer-events: none; }
 @media screen and (max-width: 640px) {
-  /* Кругла кнопка Telegram не перекриває футер */
-  .foot { padding-bottom: 96px; }
+  .foot { padding-bottom: 28px; }
+  .foot-in { flex-direction: column-reverse; gap: 22px; }
+  .foot-in > span:first-child { font-size: 13px; }
+  .foot-links { width: 100%; gap: 12px 20px; }
+  .foot-ctrl { flex-basis: 100%; justify-content: space-between; padding-top: 6px; }
 }
 
 /* ===== Свої випадаючі списки ===== */

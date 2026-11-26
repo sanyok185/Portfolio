@@ -454,3 +454,9 @@ sysDark.addEventListener?.('change', (e) => {
   root.classList.remove('light', 'dark');
   root.classList.add(e.matches ? 'dark' : 'light');
 });
+
+// Коли видно футер — ховаємо круглу кнопку Telegram
+const footEl = document.querySelector('.foot');
+if (footEl && 'IntersectionObserver' in window) {
+  new IntersectionObserver(([e]) => document.documentElement.classList.toggle('foot-visible', e.isIntersecting), { rootMargin: '0px 0px -40px 0px' }).observe(footEl);
+}
