@@ -18,7 +18,7 @@ favicon.svg, robots.txt
 
 - **Тексти і ціни:** редагуйте прямо в `index.html` та `en/index.html`.
 - **Нова робота:** скопіюйте блок `<a class="win" …>…</a>` у секції `#works` і замініть посилання, назву, підпис, теги та скрін. Скрін покладіть у `images/works/`, бажано 1600px завширшки. Кнопка «Показати більше» потрібна, тільки коли робіт більше шести. Її розмітку і стилі (клас `.wins-more`) можна додати за потреби.
-- **Форма заявок:** у `js/main.js` впишіть адресу в `FORM_ENDPOINT`, наприклад з Formspree (https://formspree.io/f/…). Поки адреса порожня, форма просить написати в Telegram.
+- **Форма заявок:** заявки надсилає функція `api/lead.js` на Vercel у ваш Telegram. У Vercel → Settings → Environment Variables додайте `TELEGRAM_BOT_TOKEN` (токен бота від @BotFather) і `TELEGRAM_CHAT_ID` (ваш chat id), потім зробіть Redeploy. Копія сайту на GitHub Pages надсилає форму на адресу з `VERCEL_ORIGIN` у `js/main.js`.
 - **Домен:** у `<head>` обох сторінок замініть `https://panchuk.dev` у тегах canonical і hreflang на свій домен.
 
 ## Хостинг

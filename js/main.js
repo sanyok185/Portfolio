@@ -119,8 +119,10 @@ worksBtn?.addEventListener('click', () => {
   worksBtn.textContent = open ? worksBtn.dataset.less : worksBtn.dataset.more;
 });
 
-// Форма заявки: вкажіть адресу, куди надсилати (наприклад https://formspree.io/f/xxxxxxx)
-const FORM_ENDPOINT = '';
+// Форма заявки: надсилається серверною функцією api/lead.js (Vercel), яка пересилає її в Telegram.
+// Копія сайту на GitHub Pages не має своїх функцій, тож звертається до адреси на Vercel.
+const VERCEL_ORIGIN = 'https://panchukportfolio.vercel.app';
+const FORM_ENDPOINT = location.hostname.endsWith('github.io') ? `${VERCEL_ORIGIN}/api/lead` : '/api/lead';
 const mainForm = document.querySelector('[data-lead-form]');
 
 // Попап із тією самою формою, що й унизу сторінки
@@ -313,20 +315,19 @@ document.querySelectorAll('[data-lead-form]').forEach((form) =>
       status.textContent = text;
       status.hidden = false;
     };
-    if (!FORM_ENDPOINT) {
-      show(form.dataset.error);
-      return;
-    }
+    if (status) status.hidden = true;
     const label = submit?.textContent ?? '';
     if (submit) {
       submit.disabled = true;
       submit.textContent = form.dataset.sending;
     }
     try {
+      const data = Object.fromEntries(new FormData(form));
+      data.page = location.href;
       const res = await fetch(FORM_ENDPOINT, {
         method: 'POST',
-        body: new FormData(form),
-        headers: { Accept: 'application/json' },
+        body: JSON.stringify(data),
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       });
       if (!res.ok) throw new Error(String(res.status));
       form.reset();

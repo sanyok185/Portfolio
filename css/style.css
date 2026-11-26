@@ -650,3 +650,6 @@ html.lead-open .cx { opacity: 0 !important; }
   .ps-cta { padding: 22px 20px; }
   .ps-cta .btn { width: 100%; }
 }
+
+/* Пастка для спам-ботів у формі */
+.hp { position: absolute !important; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
