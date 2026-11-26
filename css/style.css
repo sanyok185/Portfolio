@@ -196,8 +196,25 @@ p, li, .sub, .lead, .win-cap, .tl-d, .faq-a { text-wrap: pretty; }
 .pf.light .word { color: #e8e9f2; }
 .dot-dev { color: var(--accent); -webkit-text-stroke: 0; }
 .foot-in { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); padding-top: 24px; }
-.foot-links a.up, .foot-links a.up:hover { color: var(--accent); font-weight: 600; }
-.foot-links { display: flex; gap: 22px; flex-wrap: wrap; }
+.foot-links { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+/* Кнопка «Нагору»: кільце показує, скільки сторінки прокручено */
+.foot-links a.up { display: inline-flex; align-items: center; gap: 12px; color: var(--strong); font-weight: 600; }
+.up-c { position: relative; width: 52px; height: 52px; flex: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; isolation: isolate; }
+.up-c::before { content: ""; position: absolute; inset: 4px; border-radius: 50%; z-index: -1; background: linear-gradient(135deg, #146ef5, #8b5cf6 55%, #ec4899); transform: scale(0); transition: transform .5s cubic-bezier(.34, 1.56, .64, 1); }
+.up-ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.up-ring circle { fill: none; stroke-width: 2; }
+.up-track { stroke: var(--line); }
+.up-prog { stroke: url(#up-g); stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: var(--up, 100); transition: stroke-dashoffset .15s linear; }
+.up-a { position: relative; width: 18px; height: 18px; overflow: hidden; color: var(--accent); transition: color .3s; }
+.pf.dark .up-a { color: var(--accent-2); }
+.up-a > span { position: absolute; inset: 0; display: flex; transition: transform .5s cubic-bezier(.76, 0, .24, 1); }
+.up-a > span + span { transform: translateY(130%); }
+.up:hover .up-c::before, .up:focus-visible .up-c::before { transform: scale(1); }
+.up:hover .up-a, .up:focus-visible .up-a { color: #fff; }
+.up:hover .up-a > span:first-child, .up:focus-visible .up-a > span:first-child { transform: translateY(-130%); }
+.up:hover .up-a > span + span, .up:focus-visible .up-a > span + span { transform: none; }
+.up-t { transition: color .3s; }
+.up:hover .up-t { color: var(--accent); }
 .foot-links a:hover { color: var(--strong); }
 
 /* Mobile Telegram button */

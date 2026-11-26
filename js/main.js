@@ -141,6 +141,7 @@ form?.addEventListener('submit', async (e) => {
 
 // Шапка: скляна капсула після початку скролу, ховається при скролі вниз
 const hdr = document.querySelector('.hdr');
+const upBtn = document.querySelector('.up');
 const nav = document.querySelector('.nav');
 const navLinks = nav ? [...nav.querySelectorAll('a[href^="#"]')] : [];
 let navActive = null;
@@ -204,6 +205,11 @@ const onScroll = () => {
     }
   }
   spy();
+  // Кільце кнопки «Нагору» заповнюється разом зі скролом
+  if (upBtn) {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    upBtn.style.setProperty('--up', String(100 - (max > 0 ? Math.min(y / max, 1) : 0) * 100));
+  }
 };
 window.addEventListener(
   'scroll',

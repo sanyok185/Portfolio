@@ -583,6 +583,7 @@
   const iconFor = (a) => {
     const href = a.getAttribute?.('href') || '';
     if (href.startsWith('mailto:')) return '@';
+    if (href === '#top') return '↑';
     if (href.startsWith('#')) return '↓';
     if (a.target === '_blank') return '↗';
     if (a.matches('[data-theme-toggle]')) return '◐';
@@ -614,7 +615,7 @@
       return setMode('text');
     }
     const link = t.closest('a, button, summary, label.check, .sb');
-    if (link && !link.classList.contains('sb') && !link.closest('.nav')) {
+    if (link && !link.classList.contains('sb') && !link.closest('.nav, .up')) {
       if (link !== target) {
         target = link;
         const r = link.getBoundingClientRect();
@@ -628,7 +629,7 @@
       return setMode('link');
     }
     target = null;
-    if (link && link.closest('.nav')) return setMode('mini');
+    if (link && link.closest('.nav, .up')) return setMode('mini');
     if (!link && t.closest('.hero .h1, .word')) return setMode('lens');
     setMode('');
   };
