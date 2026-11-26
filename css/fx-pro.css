@@ -110,11 +110,6 @@ html.fx-sb::-webkit-scrollbar { width: 0; height: 0; display: none; }
 .fx .fab { overflow: hidden; isolation: isolate; }
 
 
-/* Логотип: літери хвилею */
-.fx-ll { display: inline-block; }
-.fx .logo:hover .fx-ll { animation: fx-logo .6s cubic-bezier(.34, 1.56, .64, 1) both; animation-delay: calc(var(--i) * 30ms); }
-@keyframes fx-logo { 40% { transform: translateY(-28%) rotate(-6deg); } }
-.fx .logo:hover .dot-dev { transform: none; }
 
 /* Посилання з текстом: градієнтне підкреслення росте зліва */
 .fx .contacts a, .fx .foot-links a { text-decoration: none; background: linear-gradient(90deg, #146ef5, #8b5cf6, #ec4899) 0 100% / 0% 2px no-repeat, linear-gradient(var(--line), var(--line)) 0 100% / 100% 1px no-repeat; transition: background-size .55s cubic-bezier(.16, 1, .3, 1), color .3s; padding-bottom: 4px; }

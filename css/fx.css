@@ -133,10 +133,6 @@
 /* Кругова зміна теми (View Transitions) */
 ::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
 
-/* Логотип: «.dev» мерехтить */
-.fx .logo:hover .logo-word { opacity: 1; }
-.fx .logo .dot-dev { display: inline-block; transition: transform .5s cubic-bezier(.34, 1.56, .64, 1); }
-.fx .logo:hover .dot-dev { transform: rotate(-8deg) translateY(-3px); }
 
 @media (hover: none), (pointer: coarse) {
   .cx { display: none; }

@@ -30,8 +30,9 @@ p, li, .sub, .lead, .win-cap, .tl-d, .faq-a { text-wrap: pretty; }
 /* При скролі вниз ховається, при скролі вгору повертається */
 .hdr.is-hidden { transform: translateY(-120%); }
 .logo { display: inline-flex; align-items: center; gap: 10px; color: var(--strong); font-weight: 700; flex: none; }
-.logo-mark { width: 34px; height: 34px; flex: none; border-radius: 10px; box-shadow: 0 0 0 1px var(--line); transition: transform .6s cubic-bezier(.34, 1.56, .64, 1); }
-.logo:hover .logo-mark { transform: rotate(-10deg) scale(1.06); }
+.logo-mark { width: 26px; height: 26px; flex: none; transition: transform .8s cubic-bezier(.34, 1.56, .64, 1); }
+.logo:hover .logo-mark { transform: rotate(120deg) scale(1.08); }
+.logo .dot-dev { background: linear-gradient(90deg, #146ef5, #8b5cf6 60%, #ec4899); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .logo-word { font-family: Unbounded, sans-serif; font-weight: 700; font-size: 21px; line-height: 1; letter-spacing: -0.04em; color: var(--strong); }
 .nav { position: relative; display: flex; gap: 2px; margin: 0 auto; }
 .nav a { position: relative; z-index: 1; padding: 10px 16px; border-radius: 999px; color: var(--muted); font-size: 15px; font-weight: 500; transition: color .3s; }
@@ -372,7 +373,7 @@ html.menu-open { overflow: hidden; }
   .hdr { padding: 8px 0; }
   .hdr .hdr-in { width: calc(100% - 16px); min-height: 58px; padding: 0 6px 0 12px; gap: 10px; }
   .logo { gap: 8px; }
-  .logo-mark { width: 30px; height: 30px; border-radius: 9px; }
+  .logo-mark { width: 22px; height: 22px; }
   .logo-word { font-size: 18px; }
   .tools { gap: 6px; }
 }

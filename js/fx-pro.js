@@ -331,27 +331,6 @@
     }
   };
 
-  /* ---------- Логотип: літери хвилею при наведенні ---------- */
-  document.querySelectorAll('.logo-word').forEach((w) => {
-    let i = 0;
-    const walk = (node) => {
-      [...node.childNodes].forEach((n) => {
-        if (n.nodeType === 3) {
-          const frag = document.createDocumentFragment();
-          [...n.textContent].forEach((c) => {
-            const s = document.createElement('span');
-            s.className = 'fx-ll';
-            s.style.setProperty('--i', i++);
-            s.textContent = c;
-            frag.append(s);
-          });
-          n.replaceWith(frag);
-        } else if (n.nodeType === 1) walk(n);
-      });
-    };
-    walk(w);
-  });
-
   /* ---------- Картки робіт: адреса «дешифрується» при наведенні ---------- */
   document.querySelectorAll('.win').forEach((card) => {
     const url = card.querySelector('.win-url');
