@@ -233,11 +233,9 @@ section[id], main[id] { scroll-margin-top: 80px; }
 .btn:disabled { opacity: .6; cursor: wait; }
 
 /* Про мене: цифра, навички, місто */
-.ab-stat { display: flex; align-items: center; gap: 18px; margin: 40px 0 24px; }
-.ab-num { font: 700 clamp(80px, 8vw, 120px)/.82 Unbounded, Inter, sans-serif; letter-spacing: -0.06em; background: linear-gradient(135deg, #146ef5, #8b5cf6 55%, #ec4899); -webkit-background-clip: text; background-clip: text; color: transparent; padding-bottom: .06em; }
+.ab-stat { display: flex; align-items: center; gap: 18px; margin: 40px 0 20px; }
+.ab-num { font: 700 clamp(80px, 8vw, 120px)/1 Unbounded, Inter, sans-serif; letter-spacing: -0.06em; background: linear-gradient(135deg, #146ef5, #8b5cf6 55%, #ec4899); -webkit-background-clip: text; background-clip: text; color: transparent; padding: .04em .06em .1em 0; margin: -.08em 0 -.12em; }
 .ab-lbl { color: var(--muted); font-size: 15px; line-height: 1.45; }
-.ab-chips { display: flex; gap: 8px; flex-wrap: wrap; }
-.ab-chips .chip { font-size: 13px; padding: 6px 12px; }
 .ab-loc { display: flex; align-items: center; gap: 8px; margin-top: 20px; color: var(--muted); font-size: 14px; }
 .ab-loc svg { color: var(--accent); }
 
