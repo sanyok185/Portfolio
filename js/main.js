@@ -168,8 +168,15 @@ const enhanceSelect = (select) => {
     if (isOpen()) return;
     document.querySelectorAll('.cs.open').forEach((w) => w._close?.());
     // Якщо знизу мало місця — відкриваємо вгору
+    // Межі — вікно браузера або попап, у якому стоїть список
     const r = btn.getBoundingClientRect();
-    wrap.classList.toggle('up', window.innerHeight - r.bottom < 300 && r.top > 300);
+    const box = btn.closest('.lead-box')?.getBoundingClientRect();
+    const below = (box ? Math.min(box.bottom, window.innerHeight) : window.innerHeight) - r.bottom - 12;
+    const above = r.top - (box ? Math.max(box.top, 0) : 0) - 12;
+    const need = Math.min(340, opts.length * 44 + 14);
+    const up = below < need && above > below;
+    wrap.classList.toggle('up', up);
+    wrap.style.setProperty('--cs-max', `${Math.max(140, Math.min(340, up ? above : below))}px`);
     wrap.classList.add('open');
     btn.setAttribute('aria-expanded', 'true');
     setActive(select.selectedIndex);
