@@ -46,8 +46,10 @@ p, li, .sub, .lead, .win-cap, .tl-d, .faq-a { text-wrap: pretty; }
 .btn-sm { min-height: 44px; padding: 0 18px; font-size: 15px; }
 
 /* Section label */
-.tag { display: inline-flex; align-items: center; gap: 10px; font-size: 13px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin-bottom: 18px; }
-.tag::before { content: ""; width: 28px; height: 1px; background: var(--accent); }
+.tag { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 20px; font: 600 15px/1.2 Unbounded, Inter, sans-serif; letter-spacing: -0.01em; background: linear-gradient(90deg, #146ef5, #8b5cf6 55%, #ec4899); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.tag::before { content: "✳"; display: inline-block; font-size: 20px; line-height: 1; -webkit-text-fill-color: #8b5cf6; color: #8b5cf6; animation: tag-spin 10s linear infinite; }
+@keyframes tag-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .tag::before { animation: none; } }
 
 /* Hero */
 .hero { padding: 72px 0 56px; position: relative; overflow: hidden; }
