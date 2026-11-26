@@ -230,6 +230,7 @@ section[id], main[id] { scroll-margin-top: 80px; }
 .ab-loc svg { color: var(--accent); }
 
 @media screen and (max-width: 640px) {
+  .h1 { font-size: clamp(36px, 11.6vw, 64px); line-height: 1.02; margin-bottom: 24px; }
   .hdr-in { flex-wrap: nowrap; gap: 12px; min-height: 64px; }
   .logo-word { font-size: 19px; }
   .tools { gap: 8px; }
