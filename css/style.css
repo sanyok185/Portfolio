@@ -99,13 +99,10 @@ p, li, .sub, .lead, .win-cap, .tl-d, .faq-a { text-wrap: pretty; }
 .ps-col-s::before { background: linear-gradient(135deg, #146ef5, #ec4899); }
 .ps-row { position: relative; display: grid; grid-template-columns: 1fr 1fr; border-radius: 24px; border: 1px solid var(--line); background: var(--card); overflow: hidden; transition: border-color .35s, box-shadow .45s; }
 .ps-row:hover { border-color: rgba(139, 92, 246, .45); box-shadow: 0 26px 60px -32px rgba(139, 92, 246, .5); }
-.ps-problem, .ps-solution { display: flex; align-items: flex-start; gap: 16px; padding: 28px 32px; }
+.ps-problem, .ps-solution { padding: 28px 32px; }
 .ps-problem { padding-right: 48px; border-right: 1px dashed var(--line); background: linear-gradient(90deg, rgba(236, 72, 153, .06), rgba(236, 72, 153, .015)); }
 .ps-solution { padding-left: 50px; }
-.ps-ic { flex: none; width: 34px; height: 34px; margin-top: 1px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
-.ps-ic-x { color: #ec4899; background: rgba(236, 72, 153, .12); }
-.ps-ic-ok { color: #fff; background: linear-gradient(135deg, #146ef5, #8b5cf6 55%, #ec4899); box-shadow: 0 6px 14px -6px rgba(139, 92, 246, .7); }
-.ps-t { margin: 4px 0 6px; font-size: clamp(18px, 1.6vw, 21px); font-weight: 700; letter-spacing: -0.01em; line-height: 1.3; color: var(--strong); }
+.ps-t { margin: 0 0 8px; font-size: clamp(18px, 1.6vw, 21px); font-weight: 700; letter-spacing: -0.01em; line-height: 1.3; color: var(--strong); }
 .ps-problem .ps-t { color: var(--text); }
 .ps-problem p, .ps-solution p { margin: 0; font-size: 15.5px; line-height: 1.55; }
 .ps-problem p { color: var(--muted); }
@@ -632,4 +629,24 @@ html.lead-open .cx { opacity: 0 !important; }
   /* На телефоні на головну веде логотип */
   .legal-back { display: none; }
   .legal-sec p, .legal-sec li { font-size: 16px; }
+}
+
+/* Рішення: ключові факти виділені кольором */
+.ps-solution b { font-weight: 700; color: var(--accent); }
+.pf.dark .ps-solution b { color: var(--accent-2); }
+.ps-solution .ps-t { background: linear-gradient(90deg, var(--strong), var(--strong)); -webkit-background-clip: text; background-clip: text; }
+/* Заклик наприкінці секції */
+.ps-cta { margin-top: 10px; display: flex; align-items: center; justify-content: space-between; gap: 20px 32px; flex-wrap: wrap; padding: 26px 32px; border-radius: 24px; border: 1px dashed rgba(139, 92, 246, .45); background: linear-gradient(120deg, rgba(20, 110, 245, .06), rgba(139, 92, 246, .06) 55%, rgba(236, 72, 153, .05)); }
+.ps-cta p { margin: 0; }
+.ps-cta-t { font: 600 clamp(19px, 1.8vw, 22px)/1.3 Unbounded, Inter, sans-serif; letter-spacing: -0.02em; color: var(--strong); }
+.ps-cta-p { margin-top: 4px !important; color: var(--muted); font-size: 16px; }
+.ps-cta .btn svg { transition: transform .45s cubic-bezier(.34, 1.56, .64, 1); }
+.ps-cta .btn:hover svg { transform: translateX(4px); }
+@media screen and (max-width: 767px) {
+  /* На телефоні колонок немає — підпис над кожною половиною */
+  .ps-problem::before, .ps-solution::before { content: attr(data-k); display: block; margin-bottom: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .14em; }
+  .ps-problem::before { color: #ec4899; }
+  .ps-solution::before { color: #8b5cf6; }
+  .ps-cta { padding: 22px 20px; }
+  .ps-cta .btn { width: 100%; }
 }
