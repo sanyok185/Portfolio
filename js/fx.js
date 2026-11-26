@@ -144,7 +144,7 @@
   }
 
   /* ---------- Поява при скролі ---------- */
-  const groups = ['.pains > .pain', '.wins > .win', '.prices > .price', '.extras > .extra', '.timeline > .tl', '.faq-list > .faq-item', '.head', '.ab2 > *', '.faq-side', '.final-box', '.sub'];
+  const groups = ['.pains > .pain', '.wins > .win', '.prices > .price', '.extras > .extra', '.timeline > .tl', '.faq-list > .faq-item', '.head', '.ab2 > *', '.faq-side', '.sub'];
   groups.forEach((sel) => {
     document.querySelectorAll(sel).forEach((el, k) => {
       el.classList.add('rv');
@@ -201,7 +201,7 @@
   };
   requestAnimationFrame(onFrame);
 
-  /* ---------- Hero: інтерактивне поле точок + аврора ---------- */
+  /* ---------- Hero: 3D-хмара частинок, що перетікає між фігурами + аврора ---------- */
   const hero = document.querySelector('.hero');
   if (hero) {
     const canvas = document.createElement('canvas');
@@ -213,20 +213,111 @@
     hero.prepend(aurora);
     hero.querySelector('.hero-grid')?.after(canvas);
     const ctx = canvas.getContext('2d');
-    const GAP = 30;
-    let dots = [];
+    const small = !fine || window.innerWidth < 760;
+    const N = small ? 1000 : 2000;
     let W = 0;
     let H = 0;
     let dpr = 1;
-    const mouse = { x: -9999, y: -9999, tx: -9999, ty: -9999, active: false };
+    const mouse = { x: 0, y: 0, tx: 0, ty: 0, active: false };
     const aur = { x: 0, y: 0 };
     let visible = true;
-    let colors = { base: '#8a8ba8', acc: '#146ef5' };
+    const pf = document.getElementById('pf') || document.body;
+    let dark = pf.classList.contains('dark');
+    new MutationObserver(() => (dark = pf.classList.contains('dark'))).observe(pf, { attributes: true, attributeFilter: ['class'] });
 
-    const readColors = () => {
-      const cs = getComputedStyle(document.getElementById('pf') || document.body);
-      colors = { base: cs.getPropertyValue('--muted').trim() || '#8a8ba8', acc: '#146ef5' };
+    // Фігури: кожна — N точок у просторі [-1.3; 1.3]
+    const rnd = (k) => {
+      const x = Math.sin(k * 127.1 + 311.7) * 43758.5453;
+      return x - Math.floor(x);
     };
+    const gauss = (k) => Math.sqrt(-2 * Math.log(rnd(k) + 1e-6)) * Math.cos(2 * Math.PI * rnd(k + 0.5));
+    const shapes = [];
+    const make = (fn) => {
+      const a = new Float32Array(N * 3);
+      for (let i = 0; i < N; i++) {
+        const [x, y, z] = fn(i);
+        a[i * 3] = x;
+        a[i * 3 + 1] = y;
+        a[i * 3 + 2] = z;
+      }
+      shapes.push(a);
+    };
+    const golden = Math.PI * (3 - Math.sqrt(5));
+    // Сфера
+    make((i) => {
+      const y = 1 - (i / (N - 1)) * 2;
+      const r = Math.sqrt(1 - y * y);
+      return [Math.cos(golden * i) * r, y, Math.sin(golden * i) * r];
+    });
+    // Тор (бублик)
+    make((i) => {
+      const rings = 64;
+      const per = Math.ceil(N / rings);
+      const u = ((i % per) / per) * Math.PI * 2;
+      const v = (Math.floor(i / per) / rings) * Math.PI * 2;
+      const R = 0.78;
+      const r = 0.32;
+      return [(R + r * Math.cos(v)) * Math.cos(u), r * Math.sin(v), (R + r * Math.cos(v)) * Math.sin(u)];
+    });
+    // Галактика з трьома рукавами
+    make((i) => {
+      const t = rnd(i * 3.1);
+      const rad = Math.pow(t, 0.6) * 1.3;
+      const arm = i % 3;
+      const ang = (arm * Math.PI * 2) / 3 + rad * 3.4 + gauss(i * 1.7) * 0.22;
+      return [Math.cos(ang) * rad, gauss(i * 2.3) * 0.07 * (1.3 - rad), Math.sin(ang) * rad];
+    });
+    // Подвійна спіраль ДНК
+    make((i) => {
+      const s = i / N;
+      const y = (s * 2 - 1) * 1.25;
+      const a = s * Math.PI * 7;
+      const kind = i % 4;
+      if (kind < 2) {
+        const b = a + kind * Math.PI;
+        return [Math.cos(b) * 0.45, y, Math.sin(b) * 0.45];
+      }
+      const k = rnd(i) * 2 - 1;
+      const step = Math.round(s * 40) / 40;
+      const a2 = step * Math.PI * 7;
+      return [Math.cos(a2) * 0.45 * k, (step * 2 - 1) * 1.25, Math.sin(a2) * 0.45 * k];
+    });
+    // Хвиля-поверхня
+    make((i) => {
+      const side = Math.ceil(Math.sqrt(N));
+      const gx = ((i % side) / (side - 1)) * 2.6 - 1.3;
+      const gz = (Math.floor(i / side) / (side - 1)) * 2.6 - 1.3;
+      return [gx, Math.sin(gx * 2.6) * Math.cos(gz * 2.6) * 0.22, gz];
+    });
+
+    const pos = new Float32Array(shapes[0]);
+    const from = new Float32Array(N * 3);
+    const off = new Float32Array(N * 3); // зсув від вибуху
+    const vel = new Float32Array(N * 3);
+    const sx = new Float32Array(N); // зсув на екрані від курсора
+    const sy = new Float32Array(N);
+    const svx = new Float32Array(N);
+    const svy = new Float32Array(N);
+    const delay = new Float32Array(N);
+    for (let i = 0; i < N; i++) delay[i] = rnd(i * 9.7) * 0.45;
+    // Кольори: синій, фіолетовий, рожевий, бірюзовий
+    const palette = ['#3b82f6', '#8b5cf6', '#ec4899', '#22d3ee'];
+    const group = new Uint8Array(N);
+    for (let i = 0; i < N; i++) {
+      const r = rnd(i * 5.3);
+      group[i] = r < 0.42 ? 0 : r < 0.75 ? 1 : r < 0.93 ? 2 : 3;
+    }
+    let shape = 0;
+    let morphStart = -10;
+    const MORPH = 2.2;
+    const HOLD = 4.2;
+    const toShape = (n, now) => {
+      from.set(pos);
+      shape = n % shapes.length;
+      morphStart = now;
+    };
+    const ease = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+
     const resize = () => {
       const r = hero.getBoundingClientRect();
       dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -235,109 +326,138 @@
       canvas.width = W * dpr;
       canvas.height = H * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      dots = [];
-      for (let y = GAP / 2; y < H; y += GAP) {
-        for (let x = GAP / 2; x < W; x += GAP) dots.push({ ox: x, oy: y, x, y, vx: 0, vy: 0 });
-      }
       aur.x = W / 2;
       aur.y = H * 0.45;
-      readColors();
+      mouse.x = mouse.tx = W / 2;
+      mouse.y = mouse.ty = H / 2;
     };
     resize();
     window.addEventListener('resize', resize);
-    new MutationObserver(readColors).observe(document.getElementById('pf') || document.body, { attributes: true, attributeFilter: ['class'] });
 
     hero.addEventListener('pointermove', (e) => {
       const r = hero.getBoundingClientRect();
       mouse.tx = e.clientX - r.left;
       mouse.ty = e.clientY - r.top;
-      if (!mouse.active) {
-        mouse.x = mouse.tx;
-        mouse.y = mouse.ty;
-      }
       mouse.active = true;
     });
     hero.addEventListener('pointerleave', () => (mouse.active = false));
-    // Клік — хвиля, що розходиться
-    const waves = [];
+    // Клік — вибух частинок і наступна фігура
     hero.addEventListener('pointerdown', (e) => {
-      const r = hero.getBoundingClientRect();
-      waves.push({ x: e.clientX - r.left, y: e.clientY - r.top, t: 0 });
+      if (e.target.closest('a, button')) return;
+      for (let i = 0; i < N; i++) {
+        const x = pos[i * 3];
+        const y = pos[i * 3 + 1];
+        const z = pos[i * 3 + 2];
+        const l = Math.hypot(x, y, z) || 1;
+        const f = 0.09 + rnd(i * 4.1) * 0.11;
+        vel[i * 3] += (x / l) * f;
+        vel[i * 3 + 1] += (y / l) * f;
+        vel[i * 3 + 2] += (z / l) * f;
+      }
+      toShape(shape + 1, performance.now() / 1000);
     });
     new IntersectionObserver(([e]) => (visible = e.isIntersecting)).observe(hero);
 
-    let t = 0;
-    const R = 150;
+    let ry = 0;
+    let rx = 0.45;
+    const t0 = performance.now() / 1000;
+    morphStart = t0 - MORPH;
     const draw = () => {
       requestAnimationFrame(draw);
       if (!visible) return;
-      t += 0.016;
-      mouse.x = lerp(mouse.x, mouse.tx, 0.18);
-      mouse.y = lerp(mouse.y, mouse.ty, 0.18);
-      // Без курсора аврора плаває сама
-      const ax = mouse.active ? mouse.x : W / 2 + Math.cos(t * 0.4) * W * 0.25;
-      const ay = mouse.active ? mouse.y : H * 0.45 + Math.sin(t * 0.55) * H * 0.18;
+      const now = performance.now() / 1000;
+      const t = now - t0;
+      if (now - morphStart > MORPH + HOLD) toShape(shape + 1, now);
+
+      mouse.x = lerp(mouse.x, mouse.tx, 0.08);
+      mouse.y = lerp(mouse.y, mouse.ty, 0.08);
+      const ax = mouse.active ? mouse.tx : W / 2 + Math.cos(t * 0.4) * W * 0.25;
+      const ay = mouse.active ? mouse.ty : H * 0.45 + Math.sin(t * 0.55) * H * 0.18;
       aur.x = lerp(aur.x, ax, 0.05);
       aur.y = lerp(aur.y, ay, 0.05);
       aurora.style.transform = `translate(${aur.x}px, ${aur.y}px)`;
 
+      // Обертання: саме по собі + нахил за мишею
+      ry += 0.0035;
+      const ryM = ry + (mouse.x / W - 0.5) * 1.2;
+      rx = lerp(rx, 0.45 + (mouse.y / H - 0.5) * 0.8, 0.06);
+      const cY = Math.cos(ryM);
+      const sY = Math.sin(ryM);
+      const cX = Math.cos(rx);
+      const sX = Math.sin(rx);
+
+      const sp = Math.min(window.scrollY / H, 1);
+      const cx = W / 2;
+      const cy = H * 0.47;
+      const R = Math.min(W * 0.36, H * 0.42) * (1 + sp * 1.4);
+      const fade = 1 - sp;
+      const target = shapes[shape];
+      const mt = now - morphStart;
+      const mR = small ? 90 : 130;
+
       ctx.clearRect(0, 0, W, H);
-      for (let k = waves.length - 1; k >= 0; k--) {
-        waves[k].t += 9;
-        if (waves[k].t > Math.max(W, H) * 1.2) waves.splice(k, 1);
-      }
-      for (const d of dots) {
-        let fx = 0;
-        let fy = 0;
-        let glow = 0;
-        if (mouse.active) {
-          const dx = d.x - mouse.x;
-          const dy = d.y - mouse.y;
-          const dist = Math.hypot(dx, dy) || 1;
-          if (dist < R) {
-            const f = (1 - dist / R) ** 2;
-            fx += (dx / dist) * f * 14;
-            fy += (dy / dist) * f * 14;
-            glow = Math.max(glow, 1 - dist / R);
+      ctx.globalCompositeOperation = dark ? 'lighter' : 'source-over';
+      for (let g = 0; g < palette.length; g++) {
+        ctx.fillStyle = palette[g];
+        for (let i = 0; i < N; i++) {
+          if (group[i] !== g) continue;
+          const i3 = i * 3;
+          // Перетікання з затримкою для кожної частинки
+          const p = Math.min(Math.max((mt - delay[i]) / MORPH, 0), 1);
+          const e = ease(p);
+          for (let k = 0; k < 3; k++) {
+            pos[i3 + k] = from[i3 + k] + (target[i3 + k] - from[i3 + k]) * e;
+            vel[i3 + k] *= 0.9;
+            off[i3 + k] = (off[i3 + k] + vel[i3 + k]) * 0.95;
           }
-        }
-        for (const w of waves) {
-          const dx = d.ox - w.x;
-          const dy = d.oy - w.y;
-          const dist = Math.hypot(dx, dy) || 1;
-          const band = 1 - Math.abs(dist - w.t) / 60;
-          if (band > 0) {
-            const fade = 1 - w.t / (Math.max(W, H) * 1.2);
-            fx += (dx / dist) * band * 10 * fade;
-            fy += (dy / dist) * band * 10 * fade;
-            glow = Math.max(glow, band * fade);
+          const w = Math.sin(t * 1.3 + i * 0.37) * 0.012;
+          const x = pos[i3] + off[i3] + w;
+          const y = pos[i3 + 1] + off[i3 + 1] + Math.cos(t * 1.1 + i * 0.21) * 0.012;
+          const z = pos[i3 + 2] + off[i3 + 2];
+          const x1 = x * cY - z * sY;
+          const z1 = x * sY + z * cY;
+          const y1 = y * cX - z1 * sX;
+          const z2 = y * sX + z1 * cX;
+          const persp = 2.8 / (2.8 + z2);
+          let px = cx + x1 * R * persp;
+          let py = cy + y1 * R * persp;
+          // Частинки розступаються перед курсором
+          if (mouse.active) {
+            const dx = px + sx[i] - mouse.tx;
+            const dy = py + sy[i] - mouse.ty;
+            const d = Math.hypot(dx, dy) || 1;
+            if (d < mR) {
+              const f = (1 - d / mR) ** 2 * 6;
+              svx[i] += (dx / d) * f;
+              svy[i] += (dy / d) * f;
+            }
           }
+          svx[i] = (svx[i] - sx[i] * 0.06) * 0.82;
+          svy[i] = (svy[i] - sy[i] * 0.06) * 0.82;
+          sx[i] += svx[i];
+          sy[i] += svy[i];
+          px += sx[i];
+          py += sy[i];
+          const depth = (persp - 0.68) / 0.66; // 0 — далеко, 1 — близько
+          ctx.globalAlpha = Math.max(0, (0.18 + depth * 0.7) * fade * (dark ? 0.9 : 0.75));
+          const size = (small ? 1.1 : 1.25) * persp * persp;
+          ctx.fillRect(px - size, py - size, size * 2, size * 2);
         }
-        // Пружина назад до місця
-        d.vx = (d.vx + fx + (d.ox - d.x) * 0.08) * 0.78;
-        d.vy = (d.vy + fy + (d.oy - d.y) * 0.08) * 0.78;
-        d.x += d.vx;
-        d.y += d.vy;
-        const idle = 0.5 + 0.5 * Math.sin(t * 1.4 + d.ox * 0.012 + d.oy * 0.018);
-        ctx.globalAlpha = 0.14 + idle * 0.12 + glow * 0.8;
-        ctx.fillStyle = glow > 0.05 ? colors.acc : colors.base;
-        ctx.beginPath();
-        ctx.arc(d.x, d.y, 1.1 + glow * 2.4, 0, Math.PI * 2);
-        ctx.fill();
       }
       ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = 'source-over';
     };
     requestAnimationFrame(draw);
 
-    // Легкий паралакс тексту hero
+    // Паралакс тексту hero
     const copy = hero.querySelector('.hero-copy');
     window.addEventListener(
       'scroll',
       () => {
         const y = window.scrollY;
         if (copy && y < H) {
-          copy.style.transform = `translateY(${y * 0.25}px)`;
-          copy.style.opacity = String(1 - (y / H) * 0.9);
+          copy.style.transform = `translateY(${y * 0.3}px) scale(${1 - (y / H) * 0.08})`;
+          copy.style.opacity = String(1 - (y / H) * 1.1);
         }
       },
       { passive: true }
