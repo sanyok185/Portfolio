@@ -364,7 +364,7 @@
     morphStart = t0 - MORPH;
     const draw = () => {
       requestAnimationFrame(draw);
-      if (!visible) return;
+      if (!visible || html.classList.contains('menu-open')) return;
       const now = performance.now() / 1000;
       const t = now - t0;
       if (now - morphStart > MORPH + HOLD) toShape(shape + 1, now);

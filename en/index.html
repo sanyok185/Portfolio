@@ -138,9 +138,91 @@
               </svg>
               <span>Message on Telegram</span>
             </a>
+            <button
+              class="tool icon burger"
+              type="button"
+              data-menu-toggle
+              aria-expanded="false"
+              aria-controls="mnav"
+              aria-label="Open menu"
+              data-label-close="Close menu"
+            >
+              <span class="burger-lines" aria-hidden="true"><i></i><i></i></span>
+            </button>
           </div>
         </div>
       </header>
+      <nav class="mnav" id="mnav" aria-label="Mobile menu" inert>
+        <div class="mnav-in">
+          <div class="mnav-label">Menu</div>
+          <ul class="mnav-list">
+            <li style="--i: 0">
+              <a class="mnav-link" href="#works"><span class="mnav-n">01</span><span class="mnav-t">Work</span></a>
+            </li>
+            <li style="--i: 1">
+              <a class="mnav-link" href="#prices"><span class="mnav-n">02</span><span class="mnav-t">Pricing</span></a>
+            </li>
+            <li style="--i: 2">
+              <a class="mnav-link" href="#process"><span class="mnav-n">03</span><span class="mnav-t">Process</span></a>
+            </li>
+            <li style="--i: 3">
+              <a class="mnav-link" href="#about"><span class="mnav-n">04</span><span class="mnav-t">About</span></a>
+            </li>
+            <li style="--i: 4">
+              <a class="mnav-link" href="#faq"><span class="mnav-n">05</span><span class="mnav-t">FAQ</span></a>
+            </li>
+            <li style="--i: 5">
+              <a class="mnav-link" href="#contact"><span class="mnav-n">06</span><span class="mnav-t">Contact</span></a>
+            </li>
+          </ul>
+          <div class="mnav-foot">
+            <a class="btn btn-primary mnav-cta" href="https://t.me/oleksandr_panchuk" target="_blank" rel="noopener">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.5 4.5 2.5 11.8l6 2.2 2.2 6.2 3.3-4 4.6 3.3z"></path><path d="m8.5 14 8-6"></path></svg>
+              <span>Discuss a project</span>
+            </a>
+            <div class="mnav-row">
+              <div class="mnav-contacts">
+                <span class="mnav-label">Get in touch</span>
+                <a href="https://t.me/oleksandr_panchuk" target="_blank" rel="noopener">@oleksandr_panchuk</a>
+                <a href="mailto:sanyok185@gmail.com">sanyok185@gmail.com</a>
+              </div>
+              <button class="tool icon" type="button" data-theme-toggle aria-label="Switch theme">
+                  <svg
+                    class="i-sun"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <circle cx="12" cy="12" r="4"></circle>
+                    <path
+                      d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+                    ></path>
+                  </svg>
+                  <svg
+                    class="i-moon"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+                  </svg>
+                </button>
+            </div>
+          </div>
+        </div>
+      </nav>
       <main id="top">
         <section class="hero">
           <div class="hero-grid" aria-hidden="true"></div>

@@ -253,3 +253,87 @@ html:has(.pf.dark)::-webkit-scrollbar-thumb { border-color: #0b0c16; }
 /* Кнопки в цінах без заливки — як «привидні» */
 .price:not(.hot) .btn { color: var(--strong); border-color: var(--line); }
 .price:not(.hot) .btn:hover { border-color: var(--muted); }
+
+/* ===== Мобільне меню ===== */
+.burger { display: none; }
+.burger-lines { position: relative; width: 18px; height: 12px; }
+.burger-lines i { position: absolute; right: 0; height: 2px; border-radius: 2px; background: currentColor; transition: top .5s cubic-bezier(.76, 0, .24, 1), transform .5s cubic-bezier(.76, 0, .24, 1), width .4s cubic-bezier(.76, 0, .24, 1); }
+.burger-lines i:nth-child(1) { top: 1px; width: 100%; }
+.burger-lines i:nth-child(2) { top: 9px; width: 62%; }
+.burger:hover .burger-lines i:nth-child(2) { width: 100%; }
+.menu-open .burger { background: var(--strong); border-color: var(--strong); color: var(--bg); }
+.menu-open .burger-lines i:nth-child(1) { top: 5px; transform: rotate(45deg); }
+.menu-open .burger-lines i:nth-child(2) { top: 5px; width: 100%; transform: rotate(-45deg); }
+
+.mnav { position: fixed; inset: 0; z-index: 29; overflow-y: auto; overscroll-behavior: contain; background: var(--bg); visibility: hidden; clip-path: circle(0px at var(--mx, 100%) var(--my, 0%)); transition: clip-path .8s cubic-bezier(.76, 0, .24, 1), visibility 0s linear .8s; }
+.menu-open .mnav { visibility: visible; clip-path: circle(var(--mr, 150vmax) at var(--mx, 100%) var(--my, 0%)); transition: clip-path .8s cubic-bezier(.76, 0, .24, 1), visibility 0s; }
+/* Фон меню: м'які кольорові плями і сітка, як у першому екрані */
+.mnav::before { content: ""; position: fixed; inset: 0; pointer-events: none; background: radial-gradient(520px circle at 100% 0%, rgba(20, 110, 245, .22), transparent 60%), radial-gradient(480px circle at 0% 100%, rgba(236, 72, 153, .16), transparent 60%), radial-gradient(360px circle at 20% 30%, rgba(139, 92, 246, .10), transparent 70%); }
+.mnav::after { content: ""; position: fixed; inset: 0; pointer-events: none; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 48px 48px; -webkit-mask-image: radial-gradient(ellipse at 70% 20%, #000, transparent 70%); mask-image: radial-gradient(ellipse at 70% 20%, #000, transparent 70%); opacity: .6; }
+.mnav-in { position: relative; z-index: 1; min-height: 100%; width: 100%; max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; padding: 100px 24px 28px; }
+.mnav-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .16em; color: var(--muted); }
+.mnav-in > .mnav-label { display: flex; align-items: center; gap: 10px; opacity: 0; transition: opacity .4s; }
+.mnav-in > .mnav-label::before { content: ""; width: 28px; height: 1px; background: var(--accent); }
+.mnav-list { list-style: none; margin: -12px 0 0; padding: 0; }
+.mnav-list li { position: relative; overflow: hidden; }
+/* Лінія під пунктом малюється зліва направо */
+.mnav-list li::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--line); transform: scaleX(0); transform-origin: 0 50%; transition: transform .7s cubic-bezier(.16, 1, .3, 1); }
+.mnav-link { display: flex; align-items: baseline; gap: 14px; padding: 12px 0; font: 600 clamp(30px, 8.6vw, 52px)/1.12 Unbounded, Inter, sans-serif; letter-spacing: -0.03em; color: var(--strong); transform: translateY(110%); transition: transform .55s cubic-bezier(.76, 0, .24, 1), color .3s; }
+.mnav-n { flex: 0 0 auto; min-width: 24px; font: 600 12px Inter, sans-serif; letter-spacing: .04em; color: var(--muted); transform: translateY(-1.4em); }
+.mnav-t { transition: transform .45s cubic-bezier(.16, 1, .3, 1); }
+.mnav-link::after { content: "→"; margin-left: auto; align-self: center; font: 500 22px Inter, sans-serif; color: var(--accent); opacity: 0; transform: translateX(-12px); transition: opacity .3s, transform .45s cubic-bezier(.16, 1, .3, 1); }
+.mnav-link:hover .mnav-t, .mnav-link:focus-visible .mnav-t { transform: translateX(8px); }
+.mnav-link:hover::after, .mnav-link:focus-visible::after, .mnav-link.is-active::after { opacity: 1; transform: none; }
+.mnav-link.is-active .mnav-t { background: linear-gradient(100deg, #146ef5, #8b5cf6 50%, #ec4899); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.mnav-link.is-active .mnav-n { color: var(--accent); }
+.mnav-foot { margin-top: auto; display: flex; flex-direction: column; gap: 22px; opacity: 0; transform: translateY(24px); transition: opacity .35s, transform .5s cubic-bezier(.16, 1, .3, 1); }
+.mnav-cta { width: 100%; }
+.mnav-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; padding-top: 22px; border-top: 1px solid var(--line); }
+.mnav-contacts { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.mnav-contacts .mnav-label { margin-bottom: 4px; }
+.mnav-contacts a { color: var(--strong); font-weight: 600; padding: 4px 0; overflow-wrap: anywhere; }
+
+/* Відкрите меню: пункти виїжджають по черзі */
+.menu-open .mnav-in > .mnav-label { opacity: 1; transition-delay: .25s; }
+.menu-open .mnav-link { transform: none; transition: transform .9s cubic-bezier(.16, 1, .3, 1) calc(.22s + var(--i) * .06s), color .3s; }
+.menu-open .mnav-list li::after { transform: scaleX(1); transition-delay: calc(.3s + var(--i) * .06s); }
+.menu-open .mnav-foot { opacity: 1; transform: none; transition: opacity .5s .6s, transform .8s cubic-bezier(.16, 1, .3, 1) .6s; }
+.menu-open .hdr { border-bottom-color: transparent; }
+.menu-open .fab { opacity: 0; transform: scale(.6); pointer-events: none; }
+.fab { transition: opacity .3s, transform .4s cubic-bezier(.34, 1.56, .64, 1); }
+html.menu-open { overflow: hidden; }
+
+@media screen and (max-width: 991px) {
+  .burger { display: inline-flex; }
+  .hdr-in { flex-wrap: nowrap; }
+}
+@media screen and (max-width: 767px) {
+  .hdr-cta { display: none; }
+}
+@media screen and (max-width: 640px) {
+  /* На телефоні перемикач теми живе в меню, щоб шапка влазила в один рядок */
+  .hdr [data-theme-toggle] { display: none; }
+  .mnav-in { padding-top: 92px; }
+}
+@media screen and (max-width: 380px) {
+  .wrap { padding: 0 16px; }
+  .logo-word { font-size: 17px; }
+  .mnav-in { padding-left: 16px; padding-right: 16px; }
+}
+@media screen and (min-width: 992px) {
+  .mnav { display: none; }
+  .hdr-in { flex-wrap: nowrap; }
+}
+@media screen and (min-width: 992px) and (max-width: 1199px) {
+  .hdr-in { gap: 20px; }
+  .nav { gap: 18px; }
+  .nav a { font-size: 14px; }
+  .hdr-cta { padding: 0 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mnav { clip-path: none; opacity: 0; transition: opacity .2s, visibility 0s linear .2s; }
+  .menu-open .mnav { opacity: 1; clip-path: none; transition: opacity .2s, visibility 0s; }
+  .mnav-link, .menu-open .mnav-link, .mnav-foot, .menu-open .mnav-foot { transform: none; transition: none; }
+  .mnav-foot, .mnav-in > .mnav-label { opacity: 1; }
+  .mnav-list li::after { transform: none; }
+}

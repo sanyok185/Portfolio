@@ -12,6 +12,7 @@
   let lenis = null;
   if (fine && window.Lenis) {
     lenis = new window.Lenis({ lerp: 0.09, wheelMultiplier: 1, anchors: true });
+    window.__lenis = lenis;
     const raf = (t) => {
       lenis.raf(t);
       requestAnimationFrame(raf);
