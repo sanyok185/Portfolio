@@ -311,11 +311,20 @@
 
   /* ---------- Таймлайн: лінія тягнеться за скролом ---------- */
   const timeline = document.querySelector('.timeline');
+  const tlSteps = timeline ? [...timeline.querySelectorAll('.tl')] : [];
+  const vertical = window.matchMedia('(max-width: 991px)');
   const tlFrame = () => {
     if (!timeline) return;
     const r = timeline.getBoundingClientRect();
-    const p = clamp((vh() * 0.85 - r.top) / (r.height + vh() * 0.25), 0, 1);
+    // Горизонтально лінія доходить до кінця, поки блок у середині екрана; вертикально — йде за читанням
+    const p = vertical.matches
+      ? clamp((vh() * 0.62 - r.top) / r.height, 0, 1)
+      : clamp((vh() * 0.8 - r.top) / (vh() * 0.45), 0, 1);
     timeline.style.setProperty('--tl', p.toFixed(3));
+    tlSteps.forEach((st) => {
+      const pos = vertical.matches ? st.offsetTop / r.height : st.offsetLeft / r.width;
+      st.classList.toggle('on', p > 0 && p >= pos - 0.01);
+    });
   };
 
   /* ---------- Другий рядок стрічки: швидкість від скролу ---------- */

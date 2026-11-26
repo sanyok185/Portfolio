@@ -56,8 +56,6 @@ html.fx-pt::after { content: ""; position: fixed; inset: 0; z-index: 10002; back
 .fx-scrub .fx-sw { opacity: .16; transition: opacity .4s, color .4s; }
 .fx-scrub .fx-sw.on { opacity: 1; }
 
-/* Таймлайн: лінія за скролом */
-.fx .timeline::before, .fx .timeline.fx-in::before { transform: scaleX(var(--tl, 0)); transition: none; }
 
 /* Ціни */
 .fx .price-sum, .fx .extra-sum { font-variant-numeric: tabular-nums; }
@@ -127,12 +125,6 @@ html.fx-sb::-webkit-scrollbar { width: 0; height: 0; display: none; }
 .fx .chip:not(.chip-acc):hover { border-color: var(--accent); color: var(--strong); background: var(--accent-soft); transform: translateY(-2px); }
 
 
-/* Етапи процесу */
-.fx .tl-dot { transition: background-color .35s, color .35s, border-color .35s, scale .45s cubic-bezier(.34, 1.56, .64, 1), box-shadow .35s; }
-.fx .tl:hover .tl-dot { background: linear-gradient(135deg, #146ef5, #8b5cf6); color: #fff; border-color: transparent; scale: 1.15; box-shadow: 0 10px 30px -8px rgba(139, 92, 246, .6); }
-.fx .tl-t { transition: color .3s; }
-.fx .tl:hover .tl-t { color: var(--accent-2); }
-.fx .pf.light .tl:hover .tl-t { color: var(--accent); }
 
 /* Картки робіт */
 .fx .win-go svg { transition: transform .45s cubic-bezier(.34, 1.56, .64, 1); }

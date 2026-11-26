@@ -32,11 +32,6 @@
 .fx .win.rv { clip-path: inset(12% 8% 12% 8% round 16px); transition-property: opacity, transform, filter, clip-path; }
 .fx .win.rv.fx-in { clip-path: inset(0 0 0 0 round 16px); }
 
-/* Таймлайн: лінія малюється, точки вистрибують */
-.fx .timeline::before { transform: scaleX(0); transform-origin: 0 50%; transition: transform 1.6s cubic-bezier(.65, 0, .35, 1); background: linear-gradient(90deg, var(--accent), #8b5cf6, #ec4899); height: 2px; }
-.fx .timeline.fx-in::before { transform: scaleX(1); }
-.fx .tl.fx-in .tl-dot { animation: fx-pop .7s cubic-bezier(.34, 1.56, .64, 1) both; animation-delay: calc(var(--d, 0) * 90ms + .2s); }
-@keyframes fx-pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
 
 /* Світло, що йде за курсором по картках + рамка-градієнт */
 .fx .pain, .fx .price, .fx .extra, .fx .final-box { position: relative; isolation: isolate; }
