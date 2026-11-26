@@ -152,7 +152,7 @@
   }
 
   /* ---------- Поява при скролі ---------- */
-  const groups = ['.ps > .ps-row', '.wins > .win', '.prices > .price', '.extras > .extra', '.timeline > .tl', '.faq-list > .faq-item', '.head', '.ab2 > *', '.faq-side', '.sub'];
+  const groups = ['.ps > .ps-row', '.wins > .win', '.prices > .price', '.extras-list > .extra', '.timeline > .tl', '.faq-list > .faq-item', '.head', '.ab2 > *', '.faq-side', '.sub'];
   groups.forEach((sel) => {
     document.querySelectorAll(sel).forEach((el, k) => {
       el.classList.add('rv');

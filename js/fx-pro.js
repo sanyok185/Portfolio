@@ -307,7 +307,7 @@
       }),
     { threshold: 0.6 }
   );
-  document.querySelectorAll('.price-sum, .extra-sum, .ab-num').forEach((el) => countIO.observe(el));
+  document.querySelectorAll('.price-num, .ab-num').forEach((el) => countIO.observe(el));
 
   /* ---------- Таймлайн: лінія тягнеться за скролом ---------- */
   const timeline = document.querySelector('.timeline');
