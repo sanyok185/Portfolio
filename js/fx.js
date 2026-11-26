@@ -11,43 +11,18 @@
   /* ---------- Прелоадер ---------- */
   const pl = document.querySelector('.pl');
   if (pl && html.classList.contains('fx-pl')) {
-    const odo = pl.querySelector('[data-pl-odo]');
     const line = pl.querySelector('[data-pl-line]');
-    // Три колонки цифр, що прокручуються, як у механічного лічильника
-    const cols = [0, 1, 2].map(() => {
-      const wrap = document.createElement('span');
-      const strip = document.createElement('span');
-      strip.innerHTML = '<i>0</i><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i>';
-      wrap.append(strip);
-      odo.append(wrap);
-      return { wrap, strip };
-    });
-    const setOdo = (n) => {
-      const str = String(n);
-      cols.forEach((c, i) => {
-        const ch = str[str.length - 3 + i];
-        c.wrap.style.display = ch === undefined ? 'none' : '';
-        if (ch !== undefined) c.strip.style.transform = `translateY(${-Number(ch) * 1.2}em)`;
-      });
-    };
-    setOdo(0);
     const start = performance.now();
     const MIN = 2000; // зірочка встигає намалюватися
     let loaded = document.readyState === 'complete';
     window.addEventListener('load', () => (loaded = true));
     let shown = 0;
-    let last = -1;
     const tick = (now) => {
       const t = Math.min((now - start) / MIN, 1);
-      // Поки сторінка вантажиться, лічильник повзе до 90, потім добігає до 100
+      // Поки сторінка вантажиться, смужка повзе до 90 %, потім добігає до кінця
       const target = loaded ? 100 * t : Math.min(90, 100 * t);
       shown += (target - shown) * 0.1;
       if (loaded && t >= 1 && shown > 99.4) shown = 100;
-      const n = Math.round(shown);
-      if (n !== last) {
-        last = n;
-        setOdo(n);
-      }
       line.style.transform = `scaleX(${shown / 100})`;
       if (shown < 100) return requestAnimationFrame(tick);
       setTimeout(() => {
