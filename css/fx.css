@@ -105,13 +105,8 @@
 .cx-ripple { position: absolute; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; border: 2px solid #8b5cf6; animation: cx-ripple .7s cubic-bezier(.16, 1, .3, 1) forwards; }
 @keyframes cx-ripple { to { transform: scale(6); opacity: 0; border-width: .5px; } }
 
-/* Лінза над заголовками: інвертує текст під собою */
-.cx-lens { position: fixed; left: 0; top: 0; z-index: 9998; width: 150px; height: 150px; margin: -75px 0 0 -75px; border-radius: 50%; background: #fff; mix-blend-mode: difference; pointer-events: none; scale: 0; transition: scale .5s cubic-bezier(.34, 1.56, .64, 1); will-change: transform; }
-.cx-lens.on { scale: 1; }
-
-.cx[data-mode="link"] .cx-blob, .cx[data-mode="view"] .cx-blob, .cx[data-mode="text"] .cx-blob, .cx[data-mode="lens"] .cx-blob { opacity: 0; transform: scale(.3); }
+.cx[data-mode="link"] .cx-blob, .cx[data-mode="view"] .cx-blob, .cx[data-mode="text"] .cx-blob { opacity: 0; transform: scale(.3); }
 .cx[data-mode="link"] .cx-core, .cx[data-mode="view"] .cx-core, .cx[data-mode="text"] .cx-core { opacity: 0; }
-.cx[data-mode="lens"] .cx-core { background: #fff; mix-blend-mode: normal; }
 .cx[data-mode="link"] .cx-box { opacity: 1; }
 .cx[data-mode="mini"] .cx-blob { opacity: 0; transform: scale(.3); }
 .cx[data-mode="mini"] .cx-core { background: #146ef5; box-shadow: 0 0 0 3px rgba(20, 110, 245, .2); }
@@ -144,7 +139,7 @@
 .fx .logo:hover .dot-dev { transform: rotate(-8deg) translateY(-3px); }
 
 @media (hover: none), (pointer: coarse) {
-  .cx, .cx-lens { display: none; }
+  .cx { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .fx-aurora { animation: none; }

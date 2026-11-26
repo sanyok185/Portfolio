@@ -557,16 +557,10 @@
   beam.className = 'cx-beam';
   layer.append(blob, core, box, badge, beam);
   document.body.append(layer);
-  // Лінза над заголовками: окремо від шару, щоб змішування бачило сторінку під собою
-  const lens = document.createElement('div');
-  lens.className = 'cx-lens';
-  lens.setAttribute('aria-hidden', 'true');
-  document.body.append(lens);
   html.classList.add('fx-cursor');
 
   const p = { x: -100, y: -100 };
   const bp = { x: -100, y: -100 };
-  const lp = { x: -100, y: -100 };
   const bx = { x: 0, y: 0, w: 0, h: 0, r: 0 };
   const head = { vx: 0, vy: 0 };
   let seen = false;
@@ -578,7 +572,6 @@
     if (m === mode) return;
     mode = m;
     layer.dataset.mode = m;
-    lens.classList.toggle('on', m === 'lens');
   };
   const iconFor = (a) => {
     const href = a.getAttribute?.('href') || '';
@@ -630,7 +623,6 @@
     }
     target = null;
     if (link && link.closest('.nav, .up')) return setMode('mini');
-    if (!link && t.closest('.hero .h1, .word')) return setMode('lens');
     setMode('');
   };
 
@@ -639,19 +631,15 @@
     p.y = e.clientY;
     if (!seen) {
       parts.forEach((q) => ((q.x = p.x), (q.y = p.y)));
-      bp.x = lp.x = p.x;
-      bp.y = lp.y = p.y;
+      bp.x = p.x;
+      bp.y = p.y;
       seen = true;
     }
     layer.classList.add('on');
     resolve(e.target instanceof Element ? e.target : null);
   });
   window.addEventListener('scroll', () => seen && resolve(document.elementFromPoint(p.x, p.y)), { passive: true });
-  document.addEventListener('pointerleave', () => {
-    layer.classList.remove('on');
-    lens.classList.remove('on');
-  });
-  document.addEventListener('pointerenter', () => mode === 'lens' && lens.classList.add('on'));
+  document.addEventListener('pointerleave', () => layer.classList.remove('on'));
 
   // Клік: хвиля-кільце + бризки
   window.addEventListener('pointerdown', (e) => {
@@ -693,9 +681,6 @@
     bp.y = lerp(bp.y, p.y, 0.2);
     badge.style.transform = `translate(${bp.x}px, ${bp.y}px)`;
     beam.style.transform = `translate(${p.x}px, ${p.y}px)`;
-    lp.x = lerp(lp.x, p.x, 0.22);
-    lp.y = lerp(lp.y, p.y, 0.22);
-    lens.style.transform = `translate(${lp.x}px, ${lp.y}px)`;
     if (mode === 'link' && target) {
       const r = target.getBoundingClientRect();
       const pad = 6;
