@@ -390,56 +390,161 @@
     });
   });
 
-  /* ---------- Кастомний курсор ---------- */
-  const dot = document.createElement('div');
-  dot.className = 'fx-cur';
-  const ring = document.createElement('div');
-  ring.className = 'fx-ring';
-  const label = document.createElement('span');
-  label.textContent = isEn ? 'Open ↗' : 'Відкрити ↗';
-  ring.append(label);
-  [dot, ring].forEach((n) => {
-    n.setAttribute('aria-hidden', 'true');
-    n.classList.add('is-hidden');
-    document.body.append(n);
+  /* ---------- Курсор: рідка крапля з хвостом ---------- */
+  // Хвіст із кількох кіл + SVG-фільтр «goo» = крапля, що тягнеться як ртуть
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.style.cssText = 'position:absolute;width:0;height:0';
+  svg.innerHTML =
+    '<filter id="fx-goo"><feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b"/>' +
+    '<feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -8"/></filter>';
+  document.body.append(svg);
+
+  const layer = document.createElement('div');
+  layer.className = 'cx';
+  layer.setAttribute('aria-hidden', 'true');
+  const blob = document.createElement('div');
+  blob.className = 'cx-blob';
+  const TAIL = 7;
+  const parts = Array.from({ length: TAIL }, (_, k) => {
+    const d = document.createElement('span');
+    const size = 22 - k * 2.2;
+    d.style.width = d.style.height = `${size}px`;
+    d.style.margin = `${-size / 2}px 0 0 ${-size / 2}px`;
+    blob.append(d);
+    return { el: d, x: -100, y: -100 };
   });
-  const p = { x: 0, y: 0 };
-  const rp = { x: 0, y: 0 };
+  // Рамка, що «прилипає» до кнопок і посилань
+  const box = document.createElement('div');
+  box.className = 'cx-box';
+  // Бейдж з текстом по колу для карток робіт
+  const badge = document.createElement('div');
+  badge.className = 'cx-badge';
+  const txt = (isEn ? 'OPEN PROJECT • VIEW SITE • ' : 'ВІДКРИТИ ПРОЄКТ • ДИВИТИСЬ САЙТ • ');
+  badge.innerHTML =
+    `<svg viewBox="0 0 120 120"><defs><path id="cx-circle" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0"/></defs>` +
+    `<text><textPath href="#cx-circle" textLength="288">${txt}</textPath></text></svg>` +
+    `<span class="cx-arrow">↗</span>`;
+  // Текстовий курсор для полів
+  const beam = document.createElement('div');
+  beam.className = 'cx-beam';
+  layer.append(blob, box, badge, beam);
+  document.body.append(layer);
+  html.classList.add('fx-cursor');
+
+  const p = { x: -100, y: -100 };
+  const bp = { x: -100, y: -100, s: 0 };
+  const bx = { x: 0, y: 0, w: 0, h: 0, r: 0 };
   let seen = false;
-  const setState = (t) => {
-    const onWin = t?.closest('.win');
-    const onLink = !onWin && t?.closest('a, button, summary, label, .word');
-    const onText = !onWin && !onLink && t?.closest('input, textarea');
-    ring.classList.toggle('is-view', !!onWin);
-    ring.classList.toggle('is-link', !!onLink);
-    ring.classList.toggle('is-text', !!onText);
-    dot.classList.toggle('is-hidden', !!onWin || !!onText);
+  let target = null; // елемент, до якого прилипла рамка
+  let mode = '';
+
+  const setMode = (m) => {
+    if (m === mode) return;
+    mode = m;
+    layer.dataset.mode = m;
   };
+  const resolve = (t) => {
+    if (!t) return setMode('');
+    const win = t.closest('.win');
+    if (win) {
+      target = null;
+      return setMode('view');
+    }
+    if (t.closest('input, textarea, select')) {
+      target = null;
+      return setMode('text');
+    }
+    const link = t.closest('a, button, summary, label, .word');
+    if (link) {
+      if (link !== target) {
+        target = link;
+        const r = link.getBoundingClientRect();
+        // Нова ціль — рамка стартує з позиції курсора
+        if (mode !== 'link') Object.assign(bx, { x: p.x, y: p.y, w: 0, h: 0 });
+        bx.r = parseFloat(getComputedStyle(link).borderRadius) || 10;
+        if (r.height < 40) bx.r = Math.min(bx.r, 10);
+      }
+      return setMode('link');
+    }
+    target = null;
+    setMode('');
+  };
+
   window.addEventListener('pointermove', (e) => {
     p.x = e.clientX;
     p.y = e.clientY;
     if (!seen) {
-      rp.x = p.x;
-      rp.y = p.y;
+      parts.forEach((q) => ((q.x = p.x), (q.y = p.y)));
+      bp.x = p.x;
+      bp.y = p.y;
       seen = true;
     }
-    dot.classList.remove('is-hidden');
-    ring.classList.remove('is-hidden');
-    setState(e.target instanceof Element ? e.target : null);
+    layer.classList.add('on');
+    resolve(e.target instanceof Element ? e.target : null);
   });
-  // Під час скролу курсор стоїть, а сторінка їде — оновлюємо стан
-  window.addEventListener('scroll', () => seen && setState(document.elementFromPoint(p.x, p.y)), { passive: true });
-  document.addEventListener('pointerleave', () => {
-    dot.classList.add('is-hidden');
-    ring.classList.add('is-hidden');
+  window.addEventListener('scroll', () => seen && resolve(document.elementFromPoint(p.x, p.y)), { passive: true });
+  document.addEventListener('pointerleave', () => layer.classList.remove('on'));
+
+  // Клік — бризки з краплі
+  window.addEventListener('pointerdown', (e) => {
+    layer.classList.add('down');
+    for (let k = 0; k < 10; k++) {
+      const s = document.createElement('i');
+      s.className = 'cx-spark';
+      const a = (Math.PI * 2 * k) / 10 + Math.random() * 0.4;
+      const d = 30 + Math.random() * 40;
+      s.style.left = `${e.clientX}px`;
+      s.style.top = `${e.clientY}px`;
+      layer.append(s);
+      s.animate(
+        [
+          { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+          { transform: `translate(calc(-50% + ${Math.cos(a) * d}px), calc(-50% + ${Math.sin(a) * d}px)) scale(0)`, opacity: 0 },
+        ],
+        { duration: 550 + Math.random() * 250, easing: 'cubic-bezier(.16, 1, .3, 1)' }
+      ).onfinish = () => s.remove();
+    }
   });
-  window.addEventListener('pointerdown', () => ring.classList.add('is-down'));
-  window.addEventListener('pointerup', () => ring.classList.remove('is-down'));
+  window.addEventListener('pointerup', () => layer.classList.remove('down'));
+
   const loop = () => {
-    rp.x = lerp(rp.x, p.x, 0.18);
-    rp.y = lerp(rp.y, p.y, 0.18);
-    dot.style.transform = `translate(${p.x}px, ${p.y}px)`;
-    ring.style.transform = `translate(${rp.x}px, ${rp.y}px)`;
+    // Хвіст: кожне коло наздоганяє попереднє
+    let lx = p.x;
+    let ly = p.y;
+    parts.forEach((q, k) => {
+      const f = k === 0 ? 0.55 : 0.5 - k * 0.025;
+      q.x = lerp(q.x, lx, f);
+      q.y = lerp(q.y, ly, f);
+      q.el.style.transform = `translate(${q.x}px, ${q.y}px)`;
+      lx = q.x;
+      ly = q.y;
+    });
+    // Бейдж і курсор-лінія
+    bp.x = lerp(bp.x, p.x, 0.2);
+    bp.y = lerp(bp.y, p.y, 0.2);
+    badge.style.transform = `translate(${bp.x}px, ${bp.y}px)`;
+    beam.style.transform = `translate(${p.x}px, ${p.y}px)`;
+    // Рамка обтягує елемент і трохи тягнеться за курсором
+    if (mode === 'link' && target) {
+      const r = target.getBoundingClientRect();
+      const pad = 6;
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      const ox = (p.x - cx) * 0.12;
+      const oy = (p.y - cy) * 0.18;
+      bx.x = lerp(bx.x, r.left - pad + ox, 0.25);
+      bx.y = lerp(bx.y, r.top - pad + oy, 0.25);
+      bx.w = lerp(bx.w, r.width + pad * 2, 0.25);
+      bx.h = lerp(bx.h, r.height + pad * 2, 0.25);
+      box.style.transform = `translate(${bx.x}px, ${bx.y}px)`;
+      box.style.width = `${bx.w}px`;
+      box.style.height = `${bx.h}px`;
+      box.style.borderRadius = `${bx.r + pad}px`;
+      box.style.setProperty('--lx', `${p.x - bx.x}px`);
+      box.style.setProperty('--ly', `${p.y - bx.y}px`);
+    }
     requestAnimationFrame(loop);
   };
   requestAnimationFrame(loop);

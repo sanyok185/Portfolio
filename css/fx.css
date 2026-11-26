@@ -76,17 +76,30 @@
 .fx .btn > *, .fx .tool > * { pointer-events: none; }
 
 
-/* Кастомний курсор */
-.fx-cur, .fx-ring { position: fixed; left: 0; top: 0; z-index: 9999; pointer-events: none; border-radius: 50%; will-change: transform; }
-.fx-cur { width: 8px; height: 8px; margin: -4px 0 0 -4px; background: #fff; mix-blend-mode: difference; }
-.fx-ring { width: 40px; height: 40px; margin: -20px 0 0 -20px; border: 1.5px solid #fff; mix-blend-mode: difference; display: flex; align-items: center; justify-content: center; transition: width .35s cubic-bezier(.16, 1, .3, 1), height .35s cubic-bezier(.16, 1, .3, 1), margin .35s cubic-bezier(.16, 1, .3, 1), background-color .3s, border-color .3s, opacity .3s; }
-.fx-ring span { font: 600 13px Inter, sans-serif; color: #fff; opacity: 0; transform: scale(.6); transition: opacity .25s, transform .35s cubic-bezier(.16, 1, .3, 1); white-space: nowrap; }
-.fx-ring.is-link { width: 64px; height: 64px; margin: -32px 0 0 -32px; background: #fff; }
-.fx-ring.is-view { width: 104px; height: 104px; margin: -52px 0 0 -52px; background: #146ef5; border-color: #146ef5; mix-blend-mode: normal; }
-.fx-ring.is-view span { opacity: 1; transform: none; }
-.fx-ring.is-down { width: 28px; height: 28px; margin: -14px 0 0 -14px; }
-.fx-ring.is-hidden, .fx-cur.is-hidden { opacity: 0; }
-.fx-ring.is-text { width: 3px; height: 32px; margin: -16px 0 0 -1.5px; border-radius: 2px; background: #fff; }
+/* Курсор: рідка крапля, «липка» рамка, бейдж з текстом по колу */
+.cx { position: fixed; inset: 0; z-index: 9999; pointer-events: none; opacity: 0; transition: opacity .3s; }
+.cx.on { opacity: 1; }
+.cx-blob { position: absolute; inset: 0; filter: url(#fx-goo); transition: opacity .3s, transform .3s; }
+.cx-blob span { position: absolute; left: 0; top: 0; border-radius: 50%; background: linear-gradient(135deg, #146ef5, #8b5cf6 60%, #ec4899); will-change: transform; }
+.cx-box { position: absolute; left: 0; top: 0; width: 0; height: 0; opacity: 0; border: 1.5px solid rgba(20, 110, 245, .9); background: radial-gradient(120px circle at var(--lx, 50%) var(--ly, 50%), rgba(139, 92, 246, .22), rgba(20, 110, 245, .06) 70%); box-shadow: 0 0 0 4px rgba(20, 110, 245, .08), 0 10px 40px rgba(20, 110, 245, .25); transition: opacity .25s; will-change: transform, width, height; }
+.cx-box::before, .cx-box::after { content: ""; position: absolute; width: 8px; height: 8px; border: 2px solid #ec4899; }
+.cx-box::before { left: -5px; top: -5px; border-right: 0; border-bottom: 0; }
+.cx-box::after { right: -5px; bottom: -5px; border-left: 0; border-top: 0; }
+.cx-badge { position: absolute; left: 0; top: 0; width: 120px; height: 120px; margin: -60px 0 0 -60px; display: flex; align-items: center; justify-content: center; will-change: transform; }
+.cx-badge svg { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 50%; background: rgba(11, 12, 22, .82); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transform: scale(0) rotate(-120deg); transition: transform .5s cubic-bezier(.34, 1.56, .64, 1); }
+.cx-badge text { font: 700 10.5px Unbounded, Inter, sans-serif; letter-spacing: .06em; fill: #fff; }
+.cx-arrow { position: relative; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #146ef5, #8b5cf6, #ec4899); color: #fff; font: 700 18px Inter, sans-serif; transform: scale(0); transition: transform .45s cubic-bezier(.34, 1.56, .64, 1) .05s; }
+.cx-beam { position: absolute; left: 0; top: 0; width: 2px; height: 26px; margin: -13px 0 0 -1px; border-radius: 2px; background: linear-gradient(#146ef5, #ec4899); opacity: 0; transition: opacity .2s; }
+.cx-spark { position: absolute; width: 7px; height: 7px; border-radius: 50%; background: linear-gradient(135deg, #146ef5, #ec4899); }
+.cx[data-mode="link"] .cx-blob, .cx[data-mode="view"] .cx-blob, .cx[data-mode="text"] .cx-blob { opacity: 0; transform: scale(.3); }
+.cx[data-mode="link"] .cx-box { opacity: 1; }
+.cx[data-mode="view"] .cx-badge svg { transform: scale(1) rotate(0deg); animation: cx-rot 8s linear infinite; }
+.cx[data-mode="view"] .cx-arrow { transform: scale(1); }
+.cx[data-mode="text"] .cx-beam { opacity: 1; animation: pl-blink 1s steps(1) infinite; }
+@keyframes cx-rot { from { rotate: 0deg; } to { rotate: 360deg; } }
+.cx.down .cx-box { border-color: #ec4899; }
+/* Поверх свого курсора системний ховаємо (крім полів вводу) */
+.fx-cursor body, .fx-cursor a, .fx-cursor button, .fx-cursor summary, .fx-cursor label, .fx-cursor .win, .fx-cursor input, .fx-cursor textarea, .fx-cursor select { cursor: none; }
 
 /* Футер: величезне слово хвилею */
 .fx .word { overflow: visible; overflow-x: clip; display: flex; }
@@ -110,7 +123,7 @@
 .fx .logo:hover .dot-dev { transform: rotate(-8deg) translateY(-3px); }
 
 @media (hover: none), (pointer: coarse) {
-  .fx-cur, .fx-ring { display: none; }
+  .cx { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .fx-aurora, .fx-progress, .fx .btn-primary::after { animation: none; }
