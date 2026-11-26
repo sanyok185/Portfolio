@@ -616,7 +616,7 @@
       return setMode('text');
     }
     const link = t.closest('a, button, summary, label.check, .sb');
-    if (link && !link.classList.contains('sb') && !link.closest('.nav, .up, summary, .lang')) {
+    if (link && !link.classList.contains('sb') && !link.closest('.nav, .up, summary, .lang, .theme-switch')) {
       if (link !== target) {
         target = link;
         const r = link.getBoundingClientRect();
@@ -630,7 +630,7 @@
       return setMode('link');
     }
     target = null;
-    if (link && link.closest('.nav, .up, summary, .lang')) return setMode('mini');
+    if (link && link.closest('.nav, .up, summary, .lang, .theme-switch')) return setMode('mini');
     setMode('');
   };
 

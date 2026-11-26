@@ -422,3 +422,15 @@ faqItems.forEach((d) =>
     if (d.open) faqItems.forEach((o) => o !== d && o.open && (o.open = false));
   })
 );
+
+// Поки тему не обрано вручну, сайт іде за системною і змінюється разом з нею
+const sysDark = window.matchMedia('(prefers-color-scheme: dark)');
+sysDark.addEventListener?.('change', (e) => {
+  let saved = null;
+  try {
+    saved = localStorage.getItem('theme');
+  } catch (err) {}
+  if (saved || !root) return;
+  root.classList.remove('light', 'dark');
+  root.classList.add(e.matches ? 'dark' : 'light');
+});
