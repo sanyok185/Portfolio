@@ -307,7 +307,7 @@ section[id], main[id] { scroll-margin-top: 80px; }
 /* Про мене: цифра, навички, місто */
 .ab-stat { display: flex; align-items: center; gap: 18px; margin: 40px 0 20px; }
 .ab-num { font: 700 clamp(80px, 8vw, 120px)/1 Unbounded, Inter, sans-serif; letter-spacing: -0.06em; background: linear-gradient(135deg, #146ef5, #8b5cf6 55%, #ec4899); -webkit-background-clip: text; background-clip: text; color: transparent; padding: .04em .06em .1em 0; margin: -.08em 0 -.12em; }
-.ab-lbl { color: var(--muted); font-size: 15px; line-height: 1.45; }
+.ab-lbl { color: var(--strong); font-size: clamp(18px, 1.6vw, 22px); font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; }
 .ab-loc { display: flex; align-items: center; gap: 8px; margin-top: 20px; color: var(--muted); font-size: 14px; }
 .ab-loc svg { color: var(--accent); }
 
@@ -543,3 +543,14 @@ html.lead-open .cx { opacity: 0 !important; }
   /* Коли є бургер, мова перемикається в меню */
   .hdr .lang { display: none; }
 }
+
+/* ===== Головна кнопка першого екрана ===== */
+.btn-hero { min-height: 58px; padding: 0 30px 0 32px; font-size: 17px; color: #fff; background: linear-gradient(110deg, #146ef5, #8b5cf6 45%, #ec4899 75%, #146ef5) 0 0 / 250% 100%; box-shadow: 0 14px 34px -10px rgba(139, 92, 246, .65), 0 6px 14px -6px rgba(20, 110, 245, .5); animation: hero-cta 8s ease-in-out infinite alternate; transition: box-shadow .35s, transform .35s; }
+.btn-primary.btn-hero:hover, .fx .btn-primary.btn-hero:hover { background: linear-gradient(110deg, #146ef5, #8b5cf6 45%, #ec4899 75%, #146ef5) 0 0 / 250% 100%; box-shadow: 0 18px 44px -10px rgba(236, 72, 153, .6), 0 8px 18px -6px rgba(139, 92, 246, .55); }
+.btn-hero-arr { display: inline-flex; transition: transform .45s cubic-bezier(.34, 1.56, .64, 1); }
+.btn-hero:hover .btn-hero-arr { transform: translateX(5px); }
+@keyframes hero-cta { to { background-position: 100% 0; } }
+/* Ефект «заливки» з точки входу тут не потрібен — кнопка й так градієнтна */
+.fx .btn-hero::before { display: none; }
+.fx .btn-hero:hover svg { transform: none; }
+@media (prefers-reduced-motion: reduce) { .btn-hero { animation: none; } }

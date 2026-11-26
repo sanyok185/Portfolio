@@ -584,6 +584,7 @@
   const iconFor = (a) => {
     const href = a.getAttribute?.('href') || '';
     if (href.startsWith('mailto:')) return '@';
+    if (a.hasAttribute?.('data-lead-open')) return '';
     if (href === '#top') return '↑';
     if (href.startsWith('#')) return '↓';
     if (a.target === '_blank') return '↗';
