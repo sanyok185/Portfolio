@@ -11,28 +11,51 @@
   /* ---------- Прелоадер ---------- */
   const pl = document.querySelector('.pl');
   if (pl && html.classList.contains('fx-pl')) {
-    const num = pl.querySelector('[data-pl-num]');
+    const odo = pl.querySelector('[data-pl-odo]');
     const line = pl.querySelector('[data-pl-line]');
+    // Три колонки цифр, що прокручуються, як у механічного лічильника
+    const cols = [0, 1, 2].map(() => {
+      const wrap = document.createElement('span');
+      const strip = document.createElement('span');
+      strip.innerHTML = '<i>0</i><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i>';
+      wrap.append(strip);
+      odo.append(wrap);
+      return { wrap, strip };
+    });
+    const setOdo = (n) => {
+      const str = String(n);
+      cols.forEach((c, i) => {
+        const ch = str[str.length - 3 + i];
+        c.wrap.style.display = ch === undefined ? 'none' : '';
+        if (ch !== undefined) c.strip.style.transform = `translateY(${-Number(ch) * 1.2}em)`;
+      });
+    };
+    setOdo(0);
     const start = performance.now();
-    const MIN = 1600; // мінімальна тривалість, щоб анімація встигла
+    const MIN = 2000; // зірочка встигає намалюватися
     let loaded = document.readyState === 'complete';
     window.addEventListener('load', () => (loaded = true));
     let shown = 0;
+    let last = -1;
     const tick = (now) => {
       const t = Math.min((now - start) / MIN, 1);
       // Поки сторінка вантажиться, лічильник повзе до 90, потім добігає до 100
       const target = loaded ? 100 * t : Math.min(90, 100 * t);
-      shown += (target - shown) * 0.12;
+      shown += (target - shown) * 0.1;
       if (loaded && t >= 1 && shown > 99.4) shown = 100;
-      num.textContent = String(Math.round(shown));
+      const n = Math.round(shown);
+      if (n !== last) {
+        last = n;
+        setOdo(n);
+      }
       line.style.transform = `scaleX(${shown / 100})`;
       if (shown < 100) return requestAnimationFrame(tick);
       setTimeout(() => {
         pl.classList.add('pl-out');
-        // Інтро hero стартує, поки завіса ще їде
-        setTimeout(() => html.classList.remove('fx-pl'), 1000);
-        setTimeout(() => pl.remove(), 1700);
-      }, 200);
+        // Інтро hero стартує, поки відкривається «вікно»
+        setTimeout(() => html.classList.remove('fx-pl'), 650);
+        setTimeout(() => pl.remove(), 1500);
+      }, 250);
       try {
         sessionStorage.setItem('pl', '1');
       } catch (e) {}
@@ -76,11 +99,21 @@
     // Після інтро акцентні слова отримують градієнт, що переливається
     const acc = h1.querySelector('.acc');
     if (acc) {
-      setTimeout(() => {
+      const grad = () =>
+        setTimeout(() => {
         acc.textContent = acc.textContent;
         acc.setAttribute('aria-hidden', 'true');
         acc.classList.add('fx-grad');
       }, i * 28 + 1300);
+      // Градієнт вмикаємо після інтро, а інтро чекає, поки зникне прелоадер
+      if (html.classList.contains('fx-pl')) {
+        const mo = new MutationObserver(() => {
+          if (html.classList.contains('fx-pl')) return;
+          mo.disconnect();
+          grad();
+        });
+        mo.observe(html, { attributes: true, attributeFilter: ['class'] });
+      } else grad();
     }
   }
 
