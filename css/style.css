@@ -498,3 +498,12 @@ html.lead-open .cx { opacity: 0 !important; }
 .hdr .lang, .hdr .lang:not(.icon) { padding: 3px; }
 .fx .lang::before { display: none; }
 @media (prefers-reduced-motion: reduce) { .lang-thumb { transition: none; } }
+
+/* ===== Чекбокс у стилі сайту ===== */
+.check { cursor: pointer; align-items: center; }
+.check input { -webkit-appearance: none; appearance: none; flex: none; width: 22px; height: 22px; margin: 0; border-radius: 7px; border: 1.5px solid var(--muted); background: var(--bg) center / 0 no-repeat; cursor: pointer; transition: border-color .25s, background-color .25s, background-size .35s cubic-bezier(.34, 1.56, .64, 1), box-shadow .25s; }
+.check input:hover { border-color: var(--accent); }
+.check input:focus-visible { outline: none; box-shadow: 0 0 0 4px var(--accent-soft); border-color: var(--accent); }
+.check input:checked { border-color: transparent; background-color: #8b5cf6; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E"), linear-gradient(135deg, #146ef5, #8b5cf6 55%, #ec4899); background-size: 14px, 100%; background-position: center; background-repeat: no-repeat; box-shadow: 0 6px 16px -6px rgba(139, 92, 246, .7); }
+.check:hover span { color: var(--text); }
+@media (prefers-reduced-motion: reduce) { .check input { transition: none; } }
