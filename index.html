@@ -17,6 +17,9 @@
     <link rel="canonical" href="https://panchuk.dev/" />
     <link rel="alternate" hreflang="uk" href="https://panchuk.dev/" />
     <link rel="alternate" hreflang="en" href="https://panchuk.dev/en/" />
+    <script>
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("fx");
+    </script>
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -25,6 +28,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/fx.css" />
   </head>
   <body>
     <div class="pf light" id="pf">
@@ -829,5 +833,6 @@
       </a>
     </div>
     <script src="js/main.js" defer></script>
+    <script src="js/fx.js" defer></script>
   </body>
 </html>
