@@ -403,3 +403,7 @@ window.addEventListener('resize', () => movePill(navHover || navActive, true));
 window.addEventListener('pointermove', (e) => e.clientY < 90 && hdr?.classList.remove('is-hidden'), { passive: true });
 hdr?.addEventListener('focusin', () => hdr.classList.remove('is-hidden'));
 onScroll();
+
+// Перемикач мов: плашка перебігає на іншу мову перед переходом
+document.querySelectorAll('.lang').forEach((a) => a.addEventListener('click', () => a.classList.add('switching')));
+window.addEventListener('pageshow', () => document.querySelectorAll('.lang.switching').forEach((a) => a.classList.remove('switching')));
