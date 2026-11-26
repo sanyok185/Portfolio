@@ -137,6 +137,21 @@
       });
     });
     word.replaceChildren(out);
+    // Градієнт «.dev» тягнеться через усі літери, а не повторюється в кожній
+    const devs = [...word.querySelectorAll('.fx-l.dot-dev')];
+    const fitGrad = () => {
+      if (!devs.length) return;
+      const x0 = devs[0].offsetLeft;
+      const last = devs[devs.length - 1];
+      const w = last.offsetLeft + last.offsetWidth - x0;
+      devs.forEach((l) => {
+        l.style.backgroundSize = `${w}px 100%`;
+        l.style.backgroundPosition = `${x0 - l.offsetLeft}px 0`;
+      });
+    };
+    fitGrad();
+    window.addEventListener('resize', fitGrad);
+    document.fonts?.ready.then(fitGrad);
     const jump = (s) => {
       s.classList.remove('fx-jump');
       void s.offsetWidth;
