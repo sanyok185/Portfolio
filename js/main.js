@@ -101,43 +101,220 @@ worksBtn?.addEventListener('click', () => {
 
 // Форма заявки: вкажіть адресу, куди надсилати (наприклад https://formspree.io/f/xxxxxxx)
 const FORM_ENDPOINT = '';
-const form = document.querySelector('[data-lead-form]');
-form?.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const status = form.querySelector('.form-status');
-  const submit = form.querySelector('button[type="submit"]');
-  const show = (text) => {
-    if (!status) return;
-    status.textContent = text;
-    status.hidden = false;
+const mainForm = document.querySelector('[data-lead-form]');
+
+// Попап із тією самою формою, що й унизу сторінки
+const leadModal = document.querySelector('.lead-modal');
+const leadSlot = leadModal?.querySelector('[data-lead-slot]');
+if (mainForm && leadSlot) {
+  const clone = mainForm.cloneNode(true);
+  clone.querySelector('input[name="name"]')?.setAttribute('autofocus', '');
+  leadSlot.replaceWith(clone);
+}
+
+// Свої випадаючі списки замість системних (значення лишається в прихованому <select>)
+const CHEVRON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>';
+const CHECK = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>';
+let csUid = 0;
+const enhanceSelect = (select) => {
+  const field = select.closest('.field');
+  const caption = field?.querySelector('span');
+  const id = `cs-${++csUid}`;
+  if (caption) caption.id = `${id}-label`;
+  const wrap = document.createElement('div');
+  wrap.className = 'cs';
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'input cs-btn';
+  btn.setAttribute('aria-haspopup', 'listbox');
+  btn.setAttribute('aria-expanded', 'false');
+  btn.setAttribute('aria-controls', `${id}-list`);
+  btn.innerHTML = `<span class="cs-val" id="${id}-val"></span>${CHEVRON}`;
+  btn.setAttribute('aria-labelledby', `${id}-label ${id}-val`);
+  const list = document.createElement('ul');
+  list.className = 'cs-list';
+  list.id = `${id}-list`;
+  list.setAttribute('role', 'listbox');
+  list.tabIndex = -1;
+  if (caption) list.setAttribute('aria-labelledby', `${id}-label`);
+  const opts = [...select.options].map((o, i) => {
+    const li = document.createElement('li');
+    li.className = 'cs-opt';
+    li.id = `${id}-o${i}`;
+    li.setAttribute('role', 'option');
+    li.innerHTML = `<span>${o.text}</span>${CHECK}`;
+    list.append(li);
+    return li;
+  });
+  select.classList.add('cs-native');
+  select.tabIndex = -1;
+  select.setAttribute('aria-hidden', 'true');
+  select.after(wrap);
+  wrap.append(select, btn, list);
+
+  let active = select.selectedIndex;
+  const setActive = (i) => {
+    active = Math.max(0, Math.min(opts.length - 1, i));
+    opts.forEach((li, k) => li.classList.toggle('active', k === active));
+    list.setAttribute('aria-activedescendant', opts[active].id);
+    opts[active].scrollIntoView({ block: 'nearest' });
   };
-  if (!FORM_ENDPOINT) {
-    show(form.dataset.error);
-    return;
-  }
-  const label = submit?.textContent ?? '';
-  if (submit) {
-    submit.disabled = true;
-    submit.textContent = form.dataset.sending;
-  }
-  try {
-    const res = await fetch(FORM_ENDPOINT, {
-      method: 'POST',
-      body: new FormData(form),
-      headers: { Accept: 'application/json' },
-    });
-    if (!res.ok) throw new Error(String(res.status));
-    form.reset();
-    show(form.dataset.success);
-  } catch (err) {
-    show(form.dataset.error);
-  } finally {
-    if (submit) {
-      submit.disabled = false;
-      submit.textContent = label;
+  const sync = () => {
+    btn.querySelector('.cs-val').textContent = select.options[select.selectedIndex]?.text || '';
+    opts.forEach((li, k) => li.setAttribute('aria-selected', String(k === select.selectedIndex)));
+  };
+  const isOpen = () => wrap.classList.contains('open');
+  const open = () => {
+    if (isOpen()) return;
+    document.querySelectorAll('.cs.open').forEach((w) => w._close?.());
+    // Якщо знизу мало місця — відкриваємо вгору
+    const r = btn.getBoundingClientRect();
+    wrap.classList.toggle('up', window.innerHeight - r.bottom < 300 && r.top > 300);
+    wrap.classList.add('open');
+    btn.setAttribute('aria-expanded', 'true');
+    setActive(select.selectedIndex);
+    list.focus({ preventScroll: true });
+  };
+  const close = (focusBtn = true) => {
+    if (!isOpen()) return;
+    wrap.classList.remove('open');
+    btn.setAttribute('aria-expanded', 'false');
+    if (focusBtn) btn.focus({ preventScroll: true });
+  };
+  wrap._close = () => close(false);
+  const choose = (i) => {
+    select.selectedIndex = i;
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+    sync();
+    close();
+  };
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    isOpen() ? close() : open();
+  });
+  btn.addEventListener('keydown', (e) => {
+    if (['ArrowDown', 'ArrowUp', 'Enter', ' '].includes(e.key)) {
+      e.preventDefault();
+      open();
     }
-  }
+  });
+  list.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown') setActive(active + 1);
+    else if (e.key === 'ArrowUp') setActive(active - 1);
+    else if (e.key === 'Home') setActive(0);
+    else if (e.key === 'End') setActive(opts.length - 1);
+    else if (e.key === 'Enter' || e.key === ' ') choose(active);
+    else if (e.key === 'Escape') {
+      e.stopPropagation(); // не закриваємо попап разом зі списком
+      close();
+    } else if (e.key === 'Tab') close(false);
+    else return;
+    e.preventDefault();
+  });
+  opts.forEach((li, i) => {
+    li.addEventListener('mousemove', () => active !== i && setActive(i));
+    // preventDefault: щоб клік не «пройшов» через <label> і не відкрив список знову
+    li.addEventListener('click', (e) => {
+      e.preventDefault();
+      choose(i);
+    });
+  });
+  select._cs = { sync };
+  select.addEventListener('change', sync);
+  sync();
+};
+document.querySelectorAll('[data-lead-form] select').forEach(enhanceSelect);
+document.addEventListener('pointerdown', (e) => {
+  document.querySelectorAll('.cs.open').forEach((w) => !w.contains(e.target) && w._close());
 });
+
+// Відкриття попапа
+if (leadModal) {
+  const leadForm = leadModal.querySelector('[data-lead-form]');
+  const lock = (on) => {
+    document.documentElement.classList.toggle('lead-open', on);
+    if (window.__lenis) on ? window.__lenis.stop() : window.__lenis.start();
+  };
+  const openLead = (type) => {
+    if (type && leadForm) {
+      const sel = leadForm.querySelector('select[name="type"]');
+      const opt = sel && [...sel.options].findIndex((o) => o.text === type);
+      if (opt >= 0) {
+        sel.selectedIndex = opt;
+        sel._cs?.sync();
+      }
+    }
+    if (document.documentElement.classList.contains('menu-open')) document.querySelector('[data-menu-toggle]')?.click();
+    leadModal.classList.remove('closing');
+    leadModal.showModal();
+    lock(true);
+  };
+  const closeLead = () => {
+    if (!leadModal.open || leadModal.classList.contains('closing')) return;
+    leadModal.classList.add('closing');
+    setTimeout(() => {
+      leadModal.classList.remove('closing');
+      leadModal.close();
+    }, 260);
+  };
+  leadModal.addEventListener('close', () => lock(false));
+  // Escape — з анімацією закриття
+  leadModal.addEventListener('cancel', (e) => {
+    e.preventDefault();
+    closeLead();
+  });
+  leadModal.addEventListener('click', (e) => {
+    if (e.target === leadModal || e.target.closest('[data-lead-close]')) closeLead();
+  });
+  document.querySelectorAll('[data-lead-open]').forEach((a) =>
+    a.addEventListener('click', (e) => {
+      if (e.metaKey || e.ctrlKey) return;
+      e.preventDefault();
+      openLead(a.dataset.leadType);
+    })
+  );
+}
+
+// Надсилання — для обох форм (унизу сторінки і в попапі)
+document.querySelectorAll('[data-lead-form]').forEach((form) =>
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const status = form.querySelector('.form-status');
+    const submit = form.querySelector('button[type="submit"]');
+    const show = (text) => {
+      if (!status) return;
+      status.textContent = text;
+      status.hidden = false;
+    };
+    if (!FORM_ENDPOINT) {
+      show(form.dataset.error);
+      return;
+    }
+    const label = submit?.textContent ?? '';
+    if (submit) {
+      submit.disabled = true;
+      submit.textContent = form.dataset.sending;
+    }
+    try {
+      const res = await fetch(FORM_ENDPOINT, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' },
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      form.reset();
+      form.querySelectorAll('select').forEach((sel) => sel._cs?.sync());
+      show(form.dataset.success);
+    } catch (err) {
+      show(form.dataset.error);
+    } finally {
+      if (submit) {
+        submit.disabled = false;
+        submit.textContent = label;
+      }
+    }
+  })
+);
 
 // Шапка: скляна капсула після початку скролу, ховається при скролі вниз
 const hdr = document.querySelector('.hdr');

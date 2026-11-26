@@ -422,3 +422,54 @@ html.menu-open { overflow: hidden; }
   /* Кругла кнопка Telegram не перекриває футер */
   .foot { padding-bottom: 96px; }
 }
+
+/* ===== Свої випадаючі списки ===== */
+.cs { position: relative; }
+.cs-native { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+.cs-btn { display: flex; align-items: center; justify-content: space-between; gap: 10px; text-align: left; cursor: pointer; transition: border-color .25s, box-shadow .25s; }
+.cs-btn:hover { border-color: var(--muted); }
+.cs-btn svg { flex: none; color: var(--muted); transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), color .25s; }
+.cs-val { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cs.open .cs-btn { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+.cs.open .cs-btn svg { transform: rotate(180deg); color: var(--accent); }
+.cs-list { position: absolute; left: 0; right: 0; top: calc(100% + 8px); z-index: 20; margin: 0; padding: 6px; list-style: none; border-radius: 16px; background: var(--card); border: 1px solid var(--line); box-shadow: 0 24px 60px -18px rgba(11, 12, 22, .35); max-height: 340px; overflow-y: auto; overscroll-behavior: contain; outline: none; opacity: 0; visibility: hidden; transform: translateY(-6px) scale(.98); transform-origin: 50% 0; pointer-events: none; transition: opacity .2s, transform .35s cubic-bezier(.16, 1, .3, 1), visibility 0s linear .35s; }
+.pf.dark .cs-list { background: #1b1d3a; box-shadow: 0 24px 60px -18px rgba(0, 0, 0, .7); }
+.cs.up .cs-list { top: auto; bottom: calc(100% + 8px); transform-origin: 50% 100%; transform: translateY(6px) scale(.98); }
+.cs.open .cs-list { opacity: 1; visibility: visible; transform: none; pointer-events: auto; transition: opacity .2s, transform .35s cubic-bezier(.16, 1, .3, 1), visibility 0s; }
+.cs-opt { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 12px; border-radius: 10px; font-size: 15px; color: var(--strong); cursor: pointer; transition: background-color .15s; }
+.cs-opt.active { background: var(--accent-soft); }
+.cs-opt svg { flex: none; color: var(--accent); opacity: 0; transform: scale(.6); transition: opacity .2s, transform .3s cubic-bezier(.34, 1.56, .64, 1); }
+.pf.dark .cs-opt svg { color: var(--accent-2); }
+.cs-opt[aria-selected="true"] { font-weight: 600; }
+.cs-opt[aria-selected="true"] svg { opacity: 1; transform: none; }
+
+/* ===== Попап із формою ===== */
+.lead-modal { width: min(640px, calc(100% - 24px)); max-width: none; max-height: calc(100dvh - 24px); padding: 0; border: 0; background: transparent; color: var(--text); overflow: visible; }
+.lead-modal::backdrop { background: rgba(11, 12, 22, .55); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.lead-box { position: relative; max-height: calc(100dvh - 24px); overflow-y: auto; overscroll-behavior: contain; padding: 40px; border-radius: 28px; border: 1px solid var(--line); background: radial-gradient(520px circle at 0% 0%, rgba(20, 110, 245, .14), transparent 60%), radial-gradient(460px circle at 100% 100%, rgba(236, 72, 153, .10), transparent 60%), var(--card); box-shadow: 0 50px 120px -30px rgba(11, 12, 22, .55); }
+.lead-title { font-size: clamp(28px, 4vw, 40px); line-height: 1.08; margin: 0 0 10px; padding-right: 48px; }
+.lead-sub { margin: 0 0 26px; color: var(--muted); font-size: 16px; }
+.lead-box .form { flex: none; }
+.lead-close { position: absolute; top: 18px; right: 18px; z-index: 2; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid var(--line); background: var(--bg); color: var(--strong); cursor: pointer; transition: transform .45s cubic-bezier(.34, 1.56, .64, 1), border-color .25s; }
+.lead-close:hover { transform: rotate(90deg); border-color: var(--muted); }
+.lead-modal[open] .lead-box { animation: lead-in .55s cubic-bezier(.16, 1, .3, 1); }
+.lead-modal[open]::backdrop { animation: lead-fade .3s ease; }
+.lead-modal.closing .lead-box { animation: lead-out .26s cubic-bezier(.7, 0, .84, 0) forwards; }
+.lead-modal.closing::backdrop { animation: lead-fade .26s ease reverse forwards; }
+@keyframes lead-in { from { opacity: 0; transform: translateY(28px) scale(.96); } }
+@keyframes lead-out { to { opacity: 0; transform: translateY(16px) scale(.97); } }
+@keyframes lead-fade { from { opacity: 0; } }
+html.lead-open { overflow: hidden; }
+/* Свій курсор живе під вікном, тож у попапі повертаємо системний */
+.fx-cursor .lead-modal, .fx-cursor .lead-modal * { cursor: auto; }
+.fx-cursor .lead-modal a, .fx-cursor .lead-modal button, .fx-cursor .lead-modal label.check, .fx-cursor .lead-modal .cs-opt { cursor: pointer; }
+.fx-cursor .lead-modal input[type="text"], .fx-cursor .lead-modal textarea { cursor: text; }
+html.lead-open .cx { opacity: 0 !important; }
+@media screen and (max-width: 640px) {
+  .lead-box { padding: 28px 18px 22px; border-radius: 24px; }
+  .lead-close { top: 14px; right: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lead-modal[open] .lead-box, .lead-modal.closing .lead-box, .lead-modal[open]::backdrop, .lead-modal.closing::backdrop { animation: none; }
+  .cs-list, .cs.open .cs-list { transition: none; }
+}
