@@ -343,6 +343,177 @@
     }
   };
 
+  /* ---------- Логотип: літери хвилею при наведенні ---------- */
+  document.querySelectorAll('.logo-word').forEach((w) => {
+    let i = 0;
+    const walk = (node) => {
+      [...node.childNodes].forEach((n) => {
+        if (n.nodeType === 3) {
+          const frag = document.createDocumentFragment();
+          [...n.textContent].forEach((c) => {
+            const s = document.createElement('span');
+            s.className = 'fx-ll';
+            s.style.setProperty('--i', i++);
+            s.textContent = c;
+            frag.append(s);
+          });
+          n.replaceWith(frag);
+        } else if (n.nodeType === 1) walk(n);
+      });
+    };
+    walk(w);
+  });
+
+  /* ---------- Картки робіт: адреса «дешифрується» при наведенні ---------- */
+  document.querySelectorAll('.win').forEach((card) => {
+    const url = card.querySelector('.win-url');
+    if (!url) return;
+    const txt = [...url.childNodes].find((n) => n.nodeType === 3 && n.textContent.trim());
+    if (!txt) return;
+    const span = document.createElement('span');
+    span.className = 'win-url-t';
+    span.textContent = txt.textContent.trim();
+    txt.replaceWith(span);
+    if (fine) card.addEventListener('mouseenter', () => scramble(span, 500));
+  });
+
+  /* ---------- Розділи сторінки: для активного пункту меню і скролбара ---------- */
+  const navLinks = [...document.querySelectorAll('.nav a[href^="#"]')];
+  const sections = [{ el: document.body, label: isEn ? 'Top' : 'Початок', top: 0, link: null }];
+  navLinks.forEach((a) => {
+    const el = document.querySelector(a.getAttribute('href'));
+    if (el) sections.push({ el, label: a.dataset.fxText || a.textContent.trim(), top: 0, link: a });
+  });
+  const contact = document.getElementById('contact');
+  if (contact) sections.push({ el: contact, label: isEn ? 'Contact' : 'Контакти', top: 0, link: null });
+  let docH = 1;
+  const measureSections = () => {
+    docH = document.documentElement.scrollHeight;
+    sections.forEach((sec, i) => {
+      sec.top = i === 0 ? 0 : sec.el.getBoundingClientRect().top + window.scrollY;
+    });
+    layoutRail();
+  };
+  let current = -1;
+  const spyFrame = () => {
+    const y = window.scrollY + vh() * 0.4;
+    let idx = 0;
+    sections.forEach((sec, i) => {
+      if (sec.top <= y) idx = i;
+    });
+    if (idx === current) return;
+    current = idx;
+    navLinks.forEach((a) => a.classList.toggle('is-active', a === sections[idx].link));
+    if (railLabel) {
+      railLabel.textContent = sections[idx].label;
+    }
+  };
+
+  /* ---------- Власний скролбар: градієнтна рейка з точками розділів ---------- */
+  let rail = null;
+  let railThumb = null;
+  let railLabel = null;
+  let railTrack = null;
+  const marks = [];
+  const scrollToY = (y, immediate) => {
+    if (lenis) lenis.scrollTo(y, { immediate: !!immediate, duration: 1.2 });
+    else window.scrollTo({ top: y, behavior: immediate ? 'auto' : 'smooth' });
+  };
+  function layoutRail() {
+    if (!rail) return;
+    const h = railTrack.clientHeight;
+    sections.forEach((sec, i) => {
+      if (!marks[i]) return;
+      marks[i].style.top = `${(sec.top / Math.max(docH, 1)) * h}px`;
+    });
+  }
+  if (html.classList.contains('fx-sb') && fine) {
+    rail = document.createElement('div');
+    rail.className = 'sb';
+    rail.setAttribute('aria-hidden', 'true');
+    rail.innerHTML = '<div class="sb-track"><div class="sb-thumb"><span class="sb-label"></span></div></div>';
+    railTrack = rail.querySelector('.sb-track');
+    railThumb = rail.querySelector('.sb-thumb');
+    railLabel = rail.querySelector('.sb-label');
+    sections.forEach((sec) => {
+      const m = document.createElement('button');
+      m.type = 'button';
+      m.tabIndex = -1;
+      m.className = 'sb-mark';
+      m.innerHTML = `<span>${sec.label}</span>`;
+      m.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (sec.el === document.body) scrollToY(0);
+        else if (lenis) lenis.scrollTo(sec.el, { duration: 1.4 });
+        else sec.el.scrollIntoView({ behavior: 'smooth' });
+      });
+      railTrack.append(m);
+      marks.push(m);
+    });
+    (document.getElementById('pf') || document.body).append(rail);
+
+    let drag = null;
+    const geom = () => {
+      const h = railTrack.clientHeight;
+      const th = Math.max(48, (vh() / docH) * h);
+      return { h, th, max: Math.max(docH - vh(), 1) };
+    };
+    railThumb.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const r = railThumb.getBoundingClientRect();
+      drag = { off: e.clientY - r.top };
+      railThumb.setPointerCapture(e.pointerId);
+      rail.classList.add('drag');
+    });
+    railThumb.addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      const g = geom();
+      const tr = railTrack.getBoundingClientRect();
+      const pos = clamp(e.clientY - tr.top - drag.off, 0, g.h - g.th);
+      scrollToY((pos / (g.h - g.th)) * g.max, true);
+    });
+    const end = () => {
+      drag = null;
+      rail.classList.remove('drag');
+    };
+    railThumb.addEventListener('pointerup', end);
+    railThumb.addEventListener('pointercancel', end);
+    railTrack.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('.sb-mark, .sb-thumb')) return;
+      const g = geom();
+      const tr = railTrack.getBoundingClientRect();
+      const pos = clamp(e.clientY - tr.top - g.th / 2, 0, g.h - g.th);
+      scrollToY((pos / (g.h - g.th)) * g.max);
+    });
+  }
+  let railIdle = 0;
+  let railLastY = -1;
+  const railFrame = () => {
+    if (!rail) return;
+    const g = (() => {
+      const h = railTrack.clientHeight;
+      return { h, th: Math.max(48, (vh() / docH) * h), max: Math.max(docH - vh(), 1) };
+    })();
+    const y = window.scrollY;
+    railThumb.style.height = `${g.th}px`;
+    railThumb.style.transform = `translateY(${((y / g.max) * (g.h - g.th)).toFixed(1)}px)`;
+    // Підпис розділу видно, поки йде скрол
+    if (y !== railLastY) {
+      railLastY = y;
+      railIdle = performance.now();
+      rail.classList.add('moving');
+    } else if (performance.now() - railIdle > 900) {
+      rail.classList.remove('moving');
+    }
+    marks.forEach((m, i) => m.classList.toggle('on', i <= current));
+  };
+  measureSections();
+  window.addEventListener('resize', measureSections);
+  window.addEventListener('load', measureSections);
+  document.fonts?.ready.then(measureSections);
+  new ResizeObserver(measureSections).observe(document.body);
+
   const loop = () => {
     hsFrame();
     aboutFrame();
@@ -350,6 +521,8 @@
     tlFrame();
     ribbonFrame();
     heroLetters();
+    spyFrame();
+    railFrame();
     requestAnimationFrame(loop);
   };
   requestAnimationFrame(loop);

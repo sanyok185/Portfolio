@@ -495,23 +495,36 @@
     });
   });
 
-  /* ---------- Магнітні кнопки ---------- */
+  /* ---------- Магнітні кнопки + заливка «чорнилом» від точки входу ---------- */
+  const T_IN = 'transform .15s ease-out, background-color .25s, border-color .25s, color .35s';
+  const T_OUT = 'transform .6s cubic-bezier(.34, 1.56, .64, 1), background-color .25s, border-color .25s, color .35s';
   document.querySelectorAll('.btn, .tool, .fab').forEach((b) => {
+    const ink = (e) => {
+      const r = b.getBoundingClientRect();
+      const x = e.clientX - r.left;
+      const y = e.clientY - r.top;
+      const d = 2 * Math.hypot(Math.max(x, r.width - x), Math.max(y, r.height - y));
+      b.style.setProperty('--bx', `${x}px`);
+      b.style.setProperty('--by', `${y}px`);
+      b.style.setProperty('--bd', `${d}px`);
+    };
+    b.addEventListener('pointerenter', ink);
     b.addEventListener('pointermove', (e) => {
       const r = b.getBoundingClientRect();
       const x = e.clientX - r.left - r.width / 2;
       const y = e.clientY - r.top - r.height / 2;
-      b.style.transition = 'transform .15s ease-out, background-color .25s, border-color .25s';
+      b.style.transition = T_IN;
       b.style.transform = `translate(${x * 0.3}px, ${y * 0.4}px)`;
     });
-    b.addEventListener('pointerleave', () => {
-      b.style.transition = 'transform .6s cubic-bezier(.34, 1.56, .64, 1), background-color .25s, border-color .25s';
+    b.addEventListener('pointerleave', (e) => {
+      ink(e);
+      b.style.transition = T_OUT;
       b.style.transform = '';
     });
   });
 
-  /* ---------- Курсор: рідка крапля з хвостом ---------- */
-  // Хвіст із кількох кіл + SVG-фільтр «goo» = крапля, що тягнеться як ртуть
+  /* ---------- Курсор ---------- */
+  // Рідка крапля: голова тягнеться за рухом, хвіст злипається через SVG-фільтр «goo»
   const NS = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(NS, 'svg');
   svg.setAttribute('aria-hidden', 'true');
@@ -535,60 +548,98 @@
     blob.append(d);
     return { el: d, x: -100, y: -100 };
   });
-  // Рамка, що «прилипає» до кнопок і посилань
+  // Яскрава серцевина поверх краплі — точне місце кліку
+  const core = document.createElement('div');
+  core.className = 'cx-core';
+  // Рамка, що прилипає до посилань: переливчаста обвідка + значок типу посилання
   const box = document.createElement('div');
   box.className = 'cx-box';
-  // Бейдж з текстом по колу для карток робіт
+  box.innerHTML = '<i></i><b></b>';
+  const boxIcon = box.querySelector('b');
+  // Бейдж з назвою проєкту по колу
   const badge = document.createElement('div');
   badge.className = 'cx-badge';
-  const txt = (isEn ? 'OPEN PROJECT • VIEW SITE • ' : 'ВІДКРИТИ ПРОЄКТ • ДИВИТИСЬ САЙТ • ');
   badge.innerHTML =
-    `<svg viewBox="0 0 120 120"><defs><path id="cx-circle" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0"/></defs>` +
-    `<text><textPath href="#cx-circle" textLength="288">${txt}</textPath></text></svg>` +
-    `<span class="cx-arrow">↗</span>`;
-  // Текстовий курсор для полів
+    '<svg viewBox="0 0 120 120"><defs><path id="cx-circle" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0"/></defs>' +
+    '<text><textPath href="#cx-circle"></textPath></text></svg>' +
+    '<span class="cx-arrow">↗</span>';
+  const badgeText = badge.querySelector('textPath');
   const beam = document.createElement('div');
   beam.className = 'cx-beam';
-  layer.append(blob, box, badge, beam);
+  layer.append(blob, core, box, badge, beam);
   document.body.append(layer);
+  // Лінза над заголовками: окремо від шару, щоб змішування бачило сторінку під собою
+  const lens = document.createElement('div');
+  lens.className = 'cx-lens';
+  lens.setAttribute('aria-hidden', 'true');
+  document.body.append(lens);
   html.classList.add('fx-cursor');
 
   const p = { x: -100, y: -100 };
-  const bp = { x: -100, y: -100, s: 0 };
+  const bp = { x: -100, y: -100 };
+  const lp = { x: -100, y: -100 };
   const bx = { x: 0, y: 0, w: 0, h: 0, r: 0 };
+  const head = { vx: 0, vy: 0 };
   let seen = false;
-  let target = null; // елемент, до якого прилипла рамка
+  let target = null;
+  let lastWin = null;
   let mode = '';
 
   const setMode = (m) => {
     if (m === mode) return;
     mode = m;
     layer.dataset.mode = m;
+    lens.classList.toggle('on', m === 'lens');
+  };
+  const iconFor = (a) => {
+    const href = a.getAttribute?.('href') || '';
+    if (href.startsWith('mailto:')) return '@';
+    if (href.startsWith('#')) return '↓';
+    if (a.target === '_blank') return '↗';
+    if (a.matches('[data-theme-toggle]')) return '◐';
+    if (a.matches('summary')) return '+';
+    if (/index\.html$/.test(href)) return isEn ? 'UA' : 'EN';
+    return '';
   };
   const resolve = (t) => {
     if (!t) return setMode('');
     const win = t.closest('.win');
     if (win) {
       target = null;
+      if (win !== lastWin) {
+        lastWin = win;
+        const name = (win.querySelector('.win-name')?.textContent || '').trim().toUpperCase();
+        let str = `${name} • ${isEn ? 'OPEN SITE' : 'ВІДКРИТИ'} • `;
+        if (str.length < 20) str += str;
+        badgeText.textContent = str;
+        // Підганяємо розмір, щоб текст рівно обійшов усе коло
+        const tEl = badgeText.parentNode;
+        tEl.style.fontSize = '10px';
+        const len = tEl.getComputedTextLength?.() || 0;
+        if (len) tEl.style.fontSize = `${Math.min(13, Math.max(6.5, (10 * 284) / len))}px`;
+      }
       return setMode('view');
     }
     if (t.closest('input, textarea, select')) {
       target = null;
       return setMode('text');
     }
-    const link = t.closest('a, button, summary, label, .word');
-    if (link) {
+    const link = t.closest('a, button, summary, label.check, .sb');
+    if (link && !link.classList.contains('sb')) {
       if (link !== target) {
         target = link;
         const r = link.getBoundingClientRect();
-        // Нова ціль — рамка стартує з позиції курсора
         if (mode !== 'link') Object.assign(bx, { x: p.x, y: p.y, w: 0, h: 0 });
         bx.r = parseFloat(getComputedStyle(link).borderRadius) || 10;
         if (r.height < 40) bx.r = Math.min(bx.r, 10);
+        const ic = iconFor(link);
+        boxIcon.textContent = ic;
+        box.classList.toggle('has-icon', !!ic);
       }
       return setMode('link');
     }
     target = null;
+    if (!link && t.closest('.display, .word, .ab-num, .pain-n')) return setMode('lens');
     setMode('');
   };
 
@@ -597,33 +648,43 @@
     p.y = e.clientY;
     if (!seen) {
       parts.forEach((q) => ((q.x = p.x), (q.y = p.y)));
-      bp.x = p.x;
-      bp.y = p.y;
+      bp.x = lp.x = p.x;
+      bp.y = lp.y = p.y;
       seen = true;
     }
     layer.classList.add('on');
     resolve(e.target instanceof Element ? e.target : null);
   });
   window.addEventListener('scroll', () => seen && resolve(document.elementFromPoint(p.x, p.y)), { passive: true });
-  document.addEventListener('pointerleave', () => layer.classList.remove('on'));
+  document.addEventListener('pointerleave', () => {
+    layer.classList.remove('on');
+    lens.classList.remove('on');
+  });
+  document.addEventListener('pointerenter', () => mode === 'lens' && lens.classList.add('on'));
 
-  // Клік — бризки з краплі
+  // Клік: хвиля-кільце + бризки
   window.addEventListener('pointerdown', (e) => {
     layer.classList.add('down');
-    for (let k = 0; k < 10; k++) {
+    const ring = document.createElement('i');
+    ring.className = 'cx-ripple';
+    ring.style.left = `${e.clientX}px`;
+    ring.style.top = `${e.clientY}px`;
+    layer.append(ring);
+    ring.addEventListener('animationend', () => ring.remove());
+    for (let k = 0; k < 12; k++) {
       const s = document.createElement('i');
       s.className = 'cx-spark';
-      const a = (Math.PI * 2 * k) / 10 + Math.random() * 0.4;
-      const d = 30 + Math.random() * 40;
-      s.style.left = `${e.clientX}px`;
-      s.style.top = `${e.clientY}px`;
+      const a = (Math.PI * 2 * k) / 12 + Math.random() * 0.4;
+      const d = 34 + Math.random() * 46;
+      const size = 3 + Math.random() * 5;
+      s.style.cssText = `left:${e.clientX}px;top:${e.clientY}px;width:${size}px;height:${size}px`;
       layer.append(s);
       s.animate(
         [
           { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
           { transform: `translate(calc(-50% + ${Math.cos(a) * d}px), calc(-50% + ${Math.sin(a) * d}px)) scale(0)`, opacity: 0 },
         ],
-        { duration: 550 + Math.random() * 250, easing: 'cubic-bezier(.16, 1, .3, 1)' }
+        { duration: 600 + Math.random() * 300, easing: 'cubic-bezier(.16, 1, .3, 1)' }
       ).onfinish = () => s.remove();
     }
   });
@@ -635,18 +696,31 @@
     let ly = p.y;
     parts.forEach((q, k) => {
       const f = k === 0 ? 0.55 : 0.5 - k * 0.025;
+      const px = q.x;
+      const py = q.y;
       q.x = lerp(q.x, lx, f);
       q.y = lerp(q.y, ly, f);
-      q.el.style.transform = `translate(${q.x}px, ${q.y}px)`;
+      if (k === 0) {
+        // Голова розтягується вздовж руху
+        head.vx = lerp(head.vx, q.x - px, 0.35);
+        head.vy = lerp(head.vy, q.y - py, 0.35);
+        const sp = Math.min(Math.hypot(head.vx, head.vy) / 18, 0.7);
+        const ang = Math.atan2(head.vy, head.vx);
+        q.el.style.transform = `translate(${q.x}px, ${q.y}px) rotate(${ang}rad) scale(${1 + sp}, ${1 - sp * 0.45})`;
+      } else {
+        q.el.style.transform = `translate(${q.x}px, ${q.y}px)`;
+      }
       lx = q.x;
       ly = q.y;
     });
-    // Бейдж і курсор-лінія
+    core.style.transform = `translate(${p.x}px, ${p.y}px)`;
     bp.x = lerp(bp.x, p.x, 0.2);
     bp.y = lerp(bp.y, p.y, 0.2);
     badge.style.transform = `translate(${bp.x}px, ${bp.y}px)`;
     beam.style.transform = `translate(${p.x}px, ${p.y}px)`;
-    // Рамка обтягує елемент і трохи тягнеться за курсором
+    lp.x = lerp(lp.x, p.x, 0.22);
+    lp.y = lerp(lp.y, p.y, 0.22);
+    lens.style.transform = `translate(${lp.x}px, ${lp.y}px)`;
     if (mode === 'link' && target) {
       const r = target.getBoundingClientRect();
       const pad = 6;

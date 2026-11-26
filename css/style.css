@@ -220,14 +220,6 @@ section[id], main[id] { scroll-margin-top: 80px; }
 .form-status { margin: 0; font-size: 14px; color: var(--strong); }
 .btn:disabled { opacity: .6; cursor: wait; }
 
-/* Hero: плашка з ім'ям і підказка скролу */
-.hero-pill { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 28px; padding: 8px 16px 8px 12px; border-radius: 999px; border: 1px solid var(--line); background: color-mix(in srgb, var(--card) 70%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); font-size: 14px; font-weight: 500; color: var(--strong); }
-.hero-pill-dot { width: 8px; height: 8px; border-radius: 50%; background: linear-gradient(135deg, #146ef5, #ec4899); box-shadow: 0 0 0 4px rgba(20, 110, 245, .15); }
-.hero-scroll { position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 10px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .2em; color: var(--muted); }
-.hero-mouse { position: relative; width: 22px; height: 34px; border: 1.5px solid var(--muted); border-radius: 12px; opacity: .8; }
-.hero-mouse i { position: absolute; left: 50%; top: 7px; width: 3px; height: 7px; margin-left: -1.5px; border-radius: 2px; background: var(--accent); animation: hero-wheel 1.8s cubic-bezier(.65, 0, .35, 1) infinite; }
-@keyframes hero-wheel { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(10px); opacity: 0; } 100% { transform: translateY(0); opacity: 0; } }
-
 /* Про мене: цифра, навички, місто */
 .ab-stat { display: flex; align-items: center; gap: 18px; margin: 40px 0 24px; }
 .ab-num { font: 700 clamp(80px, 8vw, 120px)/.82 Unbounded, Inter, sans-serif; letter-spacing: -0.06em; background: linear-gradient(135deg, #146ef5, #8b5cf6 55%, #ec4899); -webkit-background-clip: text; background-clip: text; color: transparent; padding-bottom: .06em; }
@@ -243,6 +235,21 @@ section[id], main[id] { scroll-margin-top: 80px; }
   .tools { gap: 8px; }
   .hero { padding-top: 40px; }
   .hero-in { min-height: 560px; }
-  .hero-scroll { display: none; }
-  .hero-pill { font-size: 13px; margin-bottom: 22px; }
 }
+
+/* Скролбар: тонкий, з градієнтом, під тему */
+html::-webkit-scrollbar { width: 12px; }
+html::-webkit-scrollbar-track { background: #f5f6fa; }
+html::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #146ef5, #8b5cf6 55%, #ec4899); border-radius: 12px; border: 3px solid #f5f6fa; }
+html::-webkit-scrollbar-thumb:hover { border-width: 2px; }
+html:has(.pf.dark)::-webkit-scrollbar-track { background: #0b0c16; }
+html:has(.pf.dark)::-webkit-scrollbar-thumb { border-color: #0b0c16; }
+@supports not selector(::-webkit-scrollbar) {
+  html { scrollbar-width: thin; scrollbar-color: #8b5cf6 #f5f6fa; }
+  html:has(.pf.dark) { scrollbar-color: #8b5cf6 #0b0c16; }
+}
+::selection { background: rgba(139, 92, 246, .35); color: inherit; }
+
+/* Кнопки в цінах без заливки — як «привидні» */
+.price:not(.hot) .btn { color: var(--strong); border-color: var(--line); }
+.price:not(.hot) .btn:hover { border-color: var(--muted); }

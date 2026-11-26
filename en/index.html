@@ -20,6 +20,7 @@
     <script>
       if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
         document.documentElement.classList.add("fx");
+        if (matchMedia("(hover: hover) and (pointer: fine)").matches) document.documentElement.classList.add("fx-sb");
         // Прелоадер — один раз за сесію; страховка, якщо скрипт не спрацює
         try {
           if (sessionStorage.getItem("pt")) {
@@ -34,7 +35,10 @@
         } catch (e) {}
       }
     </script>
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png" />
     <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png" />
+    <meta name="theme-color" content="#0b0c16" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -142,7 +146,6 @@
           <div class="hero-grid" aria-hidden="true"></div>
           <div class="wrap hero-in">
             <div class="hero-copy">
-              <div class="hero-pill"><span class="hero-pill-dot" aria-hidden="true"></span>Oleksandr Panchuk · web developer</div>
               <h1 class="display h1">Websites that <span class="acc">bring in clients</span></h1>
               <p class="lead">
                 I build turnkey websites for businesses. Visitors see right away what you offer and can contact you in a
@@ -170,7 +173,6 @@
               </div>
             </div>
           </div>
-          <div class="hero-scroll" aria-hidden="true"><span class="hero-mouse"><i></i></span>Scroll</div>
         </section>
         <div class="marquee" aria-hidden="true">
           <div class="marquee-track">
