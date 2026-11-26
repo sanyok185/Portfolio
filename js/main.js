@@ -414,3 +414,11 @@ onScroll();
 // Перемикач мов: плашка перебігає на іншу мову перед переходом
 document.querySelectorAll('.lang').forEach((a) => a.addEventListener('click', () => a.classList.add('switching')));
 window.addEventListener('pageshow', () => document.querySelectorAll('.lang.switching').forEach((a) => a.classList.remove('switching')));
+
+// FAQ: відкрите лише одне питання (запасний варіант для браузерів без <details name>)
+const faqItems = [...document.querySelectorAll('.faq-item')];
+faqItems.forEach((d) =>
+  d.addEventListener('toggle', () => {
+    if (d.open) faqItems.forEach((o) => o !== d && o.open && (o.open = false));
+  })
+);
