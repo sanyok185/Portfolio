@@ -82,7 +82,27 @@ if (burger && mnav) {
   burger.addEventListener('click', (e) => setOpen(!isOpen(), { focusFirst: e.detail === 0 }));
   // Клік по пункту закриває меню, а сторінка їде до розділу
   mnav.addEventListener('click', (e) => {
-    if (e.target.closest('a')) setOpen(false);
+    const a = e.target.closest('a');
+    if (!a) return;
+    const hash = a.getAttribute('href') || '';
+    const target = hash.startsWith('#') && hash.length > 1 ? document.querySelector(hash) : null;
+    if (!target || a.hasAttribute('data-lead-open')) {
+      setOpen(false);
+      return;
+    }
+    // Спершу закриваємо меню й розблоковуємо сторінку, а скролимо вже на наступному кадрі —
+    // інакше мобільні браузери «гублять» перехід до якоря
+    e.preventDefault();
+    e.stopPropagation();
+    setOpen(false);
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        const top = target.getBoundingClientRect().top + window.scrollY - (parseFloat(getComputedStyle(target).scrollMarginTop) || 0);
+        if (window.__lenis) window.__lenis.scrollTo(top, { duration: 1.2 });
+        else window.scrollTo({ top, behavior: 'smooth' });
+        history.replaceState(null, '', hash);
+      })
+    );
   });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && isOpen()) setOpen(false, { returnFocus: true });
