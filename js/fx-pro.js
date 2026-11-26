@@ -32,10 +32,6 @@
   }
 
   /* ---------- Зерно плівки ---------- */
-  const grain = document.createElement('div');
-  grain.className = 'fx-grain';
-  grain.setAttribute('aria-hidden', 'true');
-  document.body.append(grain);
 
   /* ---------- Шторка при зміні мови ---------- */
   const wipe = document.createElement('div');
@@ -102,15 +98,6 @@
     { threshold: 1 }
   );
   document.querySelectorAll('.tag').forEach((t) => tagIO.observe(t));
-  if (fine) {
-    document.querySelectorAll('.nav a, .foot-links a').forEach((a) => {
-      a.addEventListener('mouseenter', () => {
-        a.style.minWidth = `${a.offsetWidth}px`;
-        a.style.display = 'inline-block';
-        scramble(a, 420);
-      });
-    });
-  }
 
   /* ---------- Дві схрещені стрічки замість одного біжучого рядка ---------- */
   const marquee = document.querySelector('.marquee');
@@ -222,7 +209,7 @@
     const prev = hs.x;
     hs.x = lerp(hs.x, target, lenis ? 1 : 0.2);
     const v = hs.x - prev;
-    hs.skew = lerp(hs.skew, clamp(v * -0.12, -5, 5), 0.12);
+    hs.skew = 0;
     wins.style.transform = `translate3d(${hs.x.toFixed(1)}px,0,0) skewX(${hs.skew.toFixed(2)}deg)`;
     const center = window.innerWidth / 2;
     const active = Math.round(p * (cards.length - 1));
@@ -375,7 +362,6 @@
     span.className = 'win-url-t';
     span.textContent = txt.textContent.trim();
     txt.replaceWith(span);
-    if (fine) card.addEventListener('mouseenter', () => scramble(span, 500));
   });
 
   /* ---------- Розділи сторінки: для активного пункту меню і скролбара ---------- */
@@ -404,7 +390,6 @@
     });
     if (idx === current) return;
     current = idx;
-    navLinks.forEach((a) => a.classList.toggle('is-active', a === sections[idx].link));
     if (railLabel) {
       railLabel.textContent = sections[idx].label;
     }
@@ -521,7 +506,6 @@
     finalFrame();
     tlFrame();
     ribbonFrame();
-    heroLetters();
     spyFrame();
     railFrame();
     requestAnimationFrame(loop);

@@ -1,5 +1,6 @@
 // Перемикач теми (світла за замовчуванням, вибір зберігається)
 const root = document.getElementById('pf');
+const docEl = document.documentElement;
 const toggleTheme = (e) => {
   if (!root) return;
   const next = root.classList.contains('dark') ? 'light' : 'dark';
@@ -137,3 +138,85 @@ form?.addEventListener('submit', async (e) => {
     }
   }
 });
+
+// Шапка: скляна капсула після початку скролу, ховається при скролі вниз
+const hdr = document.querySelector('.hdr');
+const nav = document.querySelector('.nav');
+const navLinks = nav ? [...nav.querySelectorAll('a[href^="#"]')] : [];
+let navActive = null;
+let navHover = null;
+let pill = null;
+const movePill = (a, instant) => {
+  if (!pill) return;
+  if (!a) {
+    pill.style.opacity = '0';
+    return;
+  }
+  pill.classList.toggle('no-anim', !!instant);
+  pill.style.width = `${a.offsetWidth}px`;
+  pill.style.height = `${a.offsetHeight}px`;
+  pill.style.transform = `translate(${a.offsetLeft}px, ${a.offsetTop}px)`;
+  pill.style.opacity = '1';
+};
+if (nav) {
+  pill = document.createElement('span');
+  pill.className = 'nav-pill';
+  pill.setAttribute('aria-hidden', 'true');
+  nav.prepend(pill);
+  navLinks.forEach((a) =>
+    a.addEventListener('mouseenter', () => {
+      // З нуля плашка з'являється на місці, далі — переїжджає
+      movePill(a, pill.style.opacity !== '1');
+      navHover = a;
+    })
+  );
+  nav.addEventListener('mouseleave', () => {
+    navHover = null;
+    movePill(navActive);
+  });
+}
+const spy = () => {
+  if (!navLinks.length) return;
+  const line = window.innerHeight * 0.4;
+  let current = null;
+  navLinks.forEach((a) => {
+    const el = document.querySelector(a.getAttribute('href'));
+    if (el && el.getBoundingClientRect().top <= line) current = a;
+  });
+  if (current !== navActive) {
+    navLinks.forEach((a) => a.classList.toggle('is-active', a === current));
+    navActive = current;
+    if (!navHover) movePill(current);
+  }
+};
+let lastY = window.scrollY;
+let ticking = false;
+const onScroll = () => {
+  ticking = false;
+  const y = window.scrollY;
+  if (hdr) {
+    hdr.classList.toggle('is-scrolled', y > 24);
+    const dy = y - lastY;
+    if (Math.abs(dy) > 6) {
+      const hide = dy > 0 && y > 360 && !docEl.classList.contains('menu-open') && !hdr.contains(document.activeElement);
+      hdr.classList.toggle('is-hidden', hide);
+      lastY = y;
+    }
+  }
+  spy();
+};
+window.addEventListener(
+  'scroll',
+  () => {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(onScroll);
+    }
+  },
+  { passive: true }
+);
+window.addEventListener('resize', () => movePill(navHover || navActive, true));
+// Курсор біля верхнього краю або фокус з клавіатури — шапка повертається
+window.addEventListener('pointermove', (e) => e.clientY < 90 && hdr?.classList.remove('is-hidden'), { passive: true });
+hdr?.addEventListener('focusin', () => hdr.classList.remove('is-hidden'));
+onScroll();

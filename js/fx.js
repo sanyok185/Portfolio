@@ -170,10 +170,6 @@
   document.querySelectorAll('.rv, .fx-split, .timeline, .word').forEach((el) => io.observe(el));
 
   /* ---------- Прогрес скролу + швидкість для біжучого рядка ---------- */
-  const bar = document.createElement('div');
-  bar.className = 'fx-progress';
-  bar.setAttribute('aria-hidden', 'true');
-  document.body.append(bar);
 
   const track = document.querySelector('.marquee-track');
   const marquee = document.querySelector('.marquee');
@@ -184,18 +180,11 @@
   let skew = 0;
   const onFrame = () => {
     const y = window.scrollY;
-    const max = document.documentElement.scrollHeight - window.innerHeight;
-    bar.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
     vel = lerp(vel, y - lastY, 0.12);
     lastY = y;
     if (marqueeAnim) {
       const rate = 1 + Math.min(Math.abs(vel) * 0.35, 8);
       marqueeAnim.playbackRate = vel < -0.5 ? -rate : rate;
-    }
-    if (marquee) {
-      skew = lerp(skew, Math.max(-10, Math.min(10, vel * 0.4)), 0.15);
-      marquee.style.transform = `skewY(${skew * -0.25}deg)`;
-      marqueeItems.forEach((m) => (m.style.transform = `skewX(${-skew}deg)`));
     }
     requestAnimationFrame(onFrame);
   };
@@ -625,7 +614,7 @@
       return setMode('text');
     }
     const link = t.closest('a, button, summary, label.check, .sb');
-    if (link && !link.classList.contains('sb')) {
+    if (link && !link.classList.contains('sb') && !link.closest('.nav')) {
       if (link !== target) {
         target = link;
         const r = link.getBoundingClientRect();
@@ -639,7 +628,8 @@
       return setMode('link');
     }
     target = null;
-    if (!link && t.closest('.display, .word, .ab-num, .pain-n')) return setMode('lens');
+    if (link && link.closest('.nav')) return setMode('mini');
+    if (!link && t.closest('.hero .h1, .word')) return setMode('lens');
     setMode('');
   };
 
@@ -671,22 +661,6 @@
     ring.style.top = `${e.clientY}px`;
     layer.append(ring);
     ring.addEventListener('animationend', () => ring.remove());
-    for (let k = 0; k < 12; k++) {
-      const s = document.createElement('i');
-      s.className = 'cx-spark';
-      const a = (Math.PI * 2 * k) / 12 + Math.random() * 0.4;
-      const d = 34 + Math.random() * 46;
-      const size = 3 + Math.random() * 5;
-      s.style.cssText = `left:${e.clientX}px;top:${e.clientY}px;width:${size}px;height:${size}px`;
-      layer.append(s);
-      s.animate(
-        [
-          { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
-          { transform: `translate(calc(-50% + ${Math.cos(a) * d}px), calc(-50% + ${Math.sin(a) * d}px)) scale(0)`, opacity: 0 },
-        ],
-        { duration: 600 + Math.random() * 300, easing: 'cubic-bezier(.16, 1, .3, 1)' }
-      ).onfinish = () => s.remove();
-    }
   });
   window.addEventListener('pointerup', () => layer.classList.remove('down'));
 

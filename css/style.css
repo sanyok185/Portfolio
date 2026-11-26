@@ -22,13 +22,23 @@ p, li, .sub, .lead, .win-cap, .tl-d, .faq-a { text-wrap: pretty; }
 .pf.light .acc { color: var(--accent); }
 
 /* Header */
-.hdr { position: sticky; top: 0; z-index: 30; background: var(--hdr); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
-.hdr-in { display: flex; align-items: center; gap: 28px; min-height: 72px; flex-wrap: wrap; }
-.logo { display: inline-flex; align-items: center; gap: 10px; color: var(--strong); font-weight: 700; }
-.logo-word { font-family: Unbounded, sans-serif; font-weight: 700; font-size: 24px; line-height: 1; letter-spacing: -0.04em; color: var(--strong); opacity: .7; }
-.nav { display: flex; gap: 26px; margin-left: auto; flex-wrap: wrap; }
-.nav a { color: var(--muted); font-size: 15px; padding: 12px 0; }
-.nav a:hover { color: var(--strong); }
+.hdr { position: sticky; top: 0; z-index: 30; padding: 10px 0; pointer-events: none; transition: transform .55s cubic-bezier(.16, 1, .3, 1); }
+.hdr .hdr-in { pointer-events: auto; display: flex; align-items: center; gap: 24px; min-height: 62px; width: calc(100% - 24px); max-width: 1264px; margin: 0 auto; padding: 0 8px 0 20px; border-radius: 999px; border: 1px solid transparent; transition: background-color .45s, border-color .45s, box-shadow .45s; }
+/* Після початку скролу шапка стає скляною капсулою */
+.hdr.is-scrolled .hdr-in { background: var(--hdr); -webkit-backdrop-filter: blur(16px) saturate(1.5); backdrop-filter: blur(16px) saturate(1.5); border-color: var(--line); box-shadow: 0 14px 40px -18px rgba(11, 12, 22, .3); }
+.pf.dark .hdr.is-scrolled .hdr-in { box-shadow: 0 14px 40px -18px rgba(0, 0, 0, .7), inset 0 1px 0 rgba(255, 255, 255, .05); }
+/* При скролі вниз ховається, при скролі вгору повертається */
+.hdr.is-hidden { transform: translateY(-120%); }
+.logo { display: inline-flex; align-items: center; gap: 10px; color: var(--strong); font-weight: 700; flex: none; }
+.logo-mark { width: 34px; height: 34px; flex: none; border-radius: 10px; box-shadow: 0 0 0 1px var(--line); transition: transform .6s cubic-bezier(.34, 1.56, .64, 1); }
+.logo:hover .logo-mark { transform: rotate(-10deg) scale(1.06); }
+.logo-word { font-family: Unbounded, sans-serif; font-weight: 700; font-size: 21px; line-height: 1; letter-spacing: -0.04em; color: var(--strong); }
+.nav { position: relative; display: flex; gap: 2px; margin: 0 auto; }
+.nav a { position: relative; z-index: 1; padding: 10px 16px; border-radius: 999px; color: var(--muted); font-size: 15px; font-weight: 500; transition: color .3s; }
+.nav a:hover, .nav a.is-active { color: var(--strong); }
+/* Плашка, що переїжджає до пункту під курсором або до поточного розділу */
+.nav-pill { position: absolute; left: 0; top: 0; width: 0; height: 0; border-radius: 999px; background: var(--accent-soft); box-shadow: inset 0 0 0 1px rgba(20, 110, 245, .12); opacity: 0; pointer-events: none; transition: transform .5s cubic-bezier(.16, 1, .3, 1), width .5s cubic-bezier(.16, 1, .3, 1), opacity .3s; }
+.nav-pill.no-anim { transition: opacity .3s; }
 .tools { display: flex; align-items: center; gap: 10px; }
 .tool { display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-width: 44px; min-height: 44px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--text); font: 500 14px Inter, sans-serif; cursor: pointer; }
 .tool:hover { border-color: var(--muted); }
@@ -233,9 +243,7 @@ section[id], main[id] { scroll-margin-top: 80px; }
 
 @media screen and (max-width: 640px) {
   .h1 { font-size: clamp(36px, 11.6vw, 64px); line-height: 1.02; margin-bottom: 24px; }
-  .hdr-in { flex-wrap: nowrap; gap: 12px; min-height: 64px; }
-  .logo-word { font-size: 19px; }
-  .tools { gap: 8px; }
+    .tools { gap: 8px; }
   .hero { padding-top: 40px; }
   .hero-in { min-height: 560px; }
 }
@@ -301,7 +309,7 @@ html:has(.pf.dark)::-webkit-scrollbar-thumb { border-color: #0b0c16; }
 .menu-open .mnav-link { transform: none; transition: transform .9s cubic-bezier(.16, 1, .3, 1) calc(.22s + var(--i) * .06s), color .3s; }
 .menu-open .mnav-list li::after { transform: scaleX(1); transition-delay: calc(.3s + var(--i) * .06s); }
 .menu-open .mnav-foot { opacity: 1; transform: none; transition: opacity .5s .6s, transform .8s cubic-bezier(.16, 1, .3, 1) .6s; }
-.menu-open .hdr { border-bottom-color: transparent; }
+.menu-open .hdr { transform: none; }
 .menu-open .fab { opacity: 0; transform: scale(.6); pointer-events: none; }
 .fab { transition: opacity .3s, transform .4s cubic-bezier(.34, 1.56, .64, 1); }
 html.menu-open { overflow: hidden; }
@@ -320,7 +328,8 @@ html.menu-open { overflow: hidden; }
 }
 @media screen and (max-width: 380px) {
   .wrap { padding: 0 16px; }
-  .logo-word { font-size: 17px; }
+  .logo-word { font-size: 16px; }
+  .hdr .tool:not(.icon) { padding: 0 10px; }
   .mnav-in { padding-left: 16px; padding-right: 16px; }
 }
 @media screen and (min-width: 992px) {
@@ -328,9 +337,8 @@ html.menu-open { overflow: hidden; }
   .hdr-in { flex-wrap: nowrap; }
 }
 @media screen and (min-width: 992px) and (max-width: 1199px) {
-  .hdr-in { gap: 20px; }
-  .nav { gap: 18px; }
-  .nav a { font-size: 14px; }
+  .hdr .hdr-in { gap: 16px; }
+  .nav a { font-size: 14px; padding: 10px 12px; }
   .hdr-cta { padding: 0 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -339,4 +347,25 @@ html.menu-open { overflow: hidden; }
   .mnav-link, .menu-open .mnav-link, .mnav-foot, .menu-open .mnav-foot { transform: none; transition: none; }
   .mnav-foot, .mnav-in > .mnav-label { opacity: 1; }
   .mnav-list li::after { transform: none; }
+}
+
+@media screen and (max-width: 991px) {
+  .hdr .hdr-in { gap: 12px; }
+  .tools { margin-left: auto; }
+}
+@media screen and (max-width: 640px) {
+  .hdr { padding: 8px 0; }
+  .hdr .hdr-in { width: calc(100% - 16px); min-height: 58px; padding: 0 6px 0 12px; gap: 10px; }
+  .logo { gap: 8px; }
+  .logo-mark { width: 30px; height: 30px; border-radius: 9px; }
+  .logo-word { font-size: 18px; }
+  .tools { gap: 6px; }
+}
+@media screen and (max-width: 380px) {
+  .hdr .hdr-in { padding-left: 14px; }
+  .logo-mark { display: none; }
+  .logo-word { font-size: 17px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hdr, .nav-pill { transition: none; }
 }

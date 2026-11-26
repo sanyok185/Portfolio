@@ -1,7 +1,5 @@
 /* ===== FX: анімації з вау-ефектом. Вмикаються лише коли JS додав .fx на <html> ===== */
 
-/* Прогрес скролу */
-.fx-progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 100; transform-origin: 0 50%; transform: scaleX(0); background: linear-gradient(90deg, #146ef5, #8b5cf6, #ec4899, #146ef5); background-size: 200% 100%; animation: fx-flow2 4s linear infinite; pointer-events: none; }
 
 /* Hero: canvas з точками + аврора, що йде за курсором */
 .fx .hero-grid { opacity: .5; }
@@ -39,8 +37,6 @@
 .fx .timeline.fx-in::before { transform: scaleX(1); }
 .fx .tl.fx-in .tl-dot { animation: fx-pop .7s cubic-bezier(.34, 1.56, .64, 1) both; animation-delay: calc(var(--d, 0) * 90ms + .2s); }
 @keyframes fx-pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
-.fx .tl.fx-in .tl-dot::after { content: ""; position: absolute; inset: -1px; border-radius: 50%; border: 1px solid var(--accent); animation: fx-ping 2.4s cubic-bezier(0, 0, .2, 1) infinite; animation-delay: calc(var(--d, 0) * 300ms + 1s); }
-@keyframes fx-ping { 0% { transform: scale(1); opacity: .8; } 80%, 100% { transform: scale(1.9); opacity: 0; } }
 
 /* Світло, що йде за курсором по картках + рамка-градієнт */
 .fx .pain, .fx .price, .fx .extra, .fx .final-box { position: relative; isolation: isolate; }
@@ -67,12 +63,9 @@
 .fx .marquee-track { will-change: transform; }
 .fx .marquee-item { transition: color .3s; }
 .fx .marquee-item:hover { color: var(--accent); }
-.fx .marquee-item::after { display: inline-block; animation: fx-spin 6s linear infinite; }
 
 /* Кнопки: блиск, що пробігає + магніт */
 .fx .btn { position: relative; overflow: hidden; isolation: isolate; will-change: transform; }
-.fx .btn-primary::after { content: ""; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%; z-index: -1; background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .45), transparent); transform: skewX(-20deg); animation: fx-shine 3.6s ease-in-out infinite; }
-@keyframes fx-shine { 0%, 60% { left: -60%; } 100% { left: 130%; } }
 .fx .btn > *, .fx .tool > * { pointer-events: none; }
 
 
@@ -120,6 +113,8 @@
 .cx[data-mode="link"] .cx-core, .cx[data-mode="view"] .cx-core, .cx[data-mode="text"] .cx-core { opacity: 0; }
 .cx[data-mode="lens"] .cx-core { background: #fff; mix-blend-mode: normal; }
 .cx[data-mode="link"] .cx-box { opacity: 1; }
+.cx[data-mode="mini"] .cx-blob { opacity: 0; transform: scale(.3); }
+.cx[data-mode="mini"] .cx-core { background: #146ef5; box-shadow: 0 0 0 3px rgba(20, 110, 245, .2); }
 .cx[data-mode="view"] .cx-badge svg { transform: scale(1) rotate(0deg); animation: cx-rot 9s linear infinite; }
 .cx[data-mode="view"] .cx-arrow { transform: scale(1); }
 .cx[data-mode="text"] .cx-beam { opacity: 1; animation: pl-blink 1s steps(1) infinite; }
@@ -152,7 +147,7 @@
   .cx, .cx-lens { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .fx-aurora, .fx-progress, .fx .btn-primary::after { animation: none; }
+  .fx-aurora { animation: none; }
 }
 .fx .hero .h1:not(.fx-ready) { opacity: 0; }
 
