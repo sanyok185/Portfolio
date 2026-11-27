@@ -1,0 +1,5 @@
+aiogram==3.34.0
+anthropic==2.14.0
+aiosqlite==0.22.1
+pydantic==2.14.4
+tzdata
